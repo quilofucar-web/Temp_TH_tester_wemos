@@ -126,7 +126,7 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
   - `grid1.step` — fragmento de la rejilla HSW para simular el ajuste en Onshape.
   - `hexagonconector3dprint.stl` — conector de resorte probado por Carlos. **Es el que se usa.**
   - `3mfs/` — proyectos y laminados de Bambu Studio; el laminado trae tiempo y gramos en `Metadata/slice_info.config`. `carcasa_completa_1.3mf` = cama con las 3 piezas vigentes (así se reimprime).
-- Git: rama `main`, con remoto privado `origin` = github.com/quilofucar-web/Temp_TH_tester_wemos (desde 2026-10-16). No se versiona `output/` (salvo `output/ensamble_16.step`, el ensamble final), `externalfiles/grid1.step`, `.claude/settings.local.json` ni `.superpowers/sdd/`.
+- Git: rama `main` → repo **público** github.com/quilofucar-web/Temp_TH_tester_wemos (licencia MIT; historial reiniciado el 2026-10-19 con un solo commit y autor `quilofucar@gmail.com`, configurado en este repo). **Nunca subir nada con el correo del trabajo.** La rama local `respaldo-historial-trabajo` guarda el historial anterior y **nunca se sube**. Los `externalfiles/*.stl` de terceros solo existen en local. No se versiona `output/` (salvo `output/ensamble_16.step`, el ensamble final), `externalfiles/grid1.step`, `.claude/settings.local.json` ni `.superpowers/sdd/`.
 - `.claude/settings.local.json` — permisos del proyecto (`git *` permitido; `push --force`, `reset --hard` y `clean` piden confirmación)
 - Python: `python3` tiene cadquery 2.8.0, numpy, matplotlib, pytest y PyYAML (no hay trimesh ni ESPHome).
 
