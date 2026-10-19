@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+output/
+externalfiles/grid1.step
+# Modelos de terceros (componentes de EasyEDA, pared HSW, conector original): solo locales
+externalfiles/*.stl

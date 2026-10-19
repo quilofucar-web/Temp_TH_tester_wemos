@@ -1,0 +1,135 @@
+# =============================================================================
+# Medidor THR (temperatura / humedad) - Wemos D1 mini + 2x BME280 + LCD 16x2
+# VERSION: 1  (2026-09-25)
+# Archivo: c:\medidorTHR\esphome\bmetesting_1.yaml
+#
+# Cambios respecto al YAML de la protoboard:
+#   - Etiquetas de los BME280 corregidas: 0x76 = AMBIENTE (SDO->GND en la
+#     tira de bus, dentro de la caja), 0x77 = FILAMENTOS (sensor remoto por
+#     CAT6, SDO->3V3 en la capsula).
+#   - Backlight con apagado automatico: el boton (o Home Assistant) la
+#     enciende y se apaga sola despues de 'backlight_timeout'. Otra pulsacion
+#     con la luz encendida la apaga; si se enciende de nuevo, la cuenta
+#     reinicia.
+#   - Al arrancar, la luz se enciende sola (prueba visual de que todo
+#     inicio) y se apaga despues de 'backlight_timeout'.
+#   - Se quito el bloque 'substitutions' que no se usaba; se agrego
+#     'backlight_timeout'.
+#
+# Pines (confirmados en la protoboard):
+#   Bus sensores: SDA D2 (GPIO4), SCL D1 (GPIO5)
+#   Bus LCD:      SDA D6 (GPIO12), SCL D5 (GPIO14)
+#   Boton:        D7 (GPIO13) a GND, pull-up interno
+# =============================================================================
+
+substitutions:
+  backlight_timeout: 30s          # tiempo que la luz queda encendida
+
+esphome:
+  name: bmetesting                # mismo nombre del dispositivo actual (OTA sin cambios)
+  friendly_name: BMEtesting
+  on_boot:
+    priority: -100                # despues de que todo (incluido el LCD) inicio
+    then:
+      - switch.turn_on: sw_backlight
+
+esp8266:
+  board: d1_mini
+
+logger:
+
+api:
+
+ota:
+  platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# ---------- DOS buses I2C separados ----------
+i2c:
+  - id: bus_sensores
+    sda: GPIO4         # D2
+    scl: GPIO5         # D1
+    scan: true         # el log lista las direcciones encontradas (esperado: 0x76 y 0x77)
+  - id: bus_lcd
+    sda: GPIO12        # D6
+    scl: GPIO14        # D5
+    scan: true         # esperado: 0x27
+
+# ---------- Sensores (bus de 3.3V) ----------
+sensor:
+  - platform: bme280_i2c
+    i2c_id: bus_sensores
+    address: 0x76            # AMBIENTE: SDO->GND en la tira de bus
+    temperature:
+      name: "Temp Ambiente"
+      id: temp_amb
+    humidity:
+      name: "Humedad Ambiente"
+      id: hum_amb
+    pressure:
+      name: "Presion Ambiente"
+    update_interval: 30s
+
+  - platform: bme280_i2c
+    i2c_id: bus_sensores
+    address: 0x77            # FILAMENTOS (remoto por CAT6): SDO->3V3 en la capsula
+    temperature:
+      name: "Temp Filamentos"
+      id: temp_fil
+    humidity:
+      name: "Humedad Filamentos"
+      id: hum_fil
+    pressure:
+      name: "Presion Filamentos"
+    update_interval: 30s
+
+# ---------- LCD (bus de 5V) ----------
+display:
+  - platform: lcd_pcf8574
+    i2c_id: bus_lcd
+    id: lcddisp                 # id para poder controlar el backlight
+    dimensions: 16x2
+    address: 0x27
+    update_interval: 5s
+    lambda: |-
+      it.printf(0, 0, "Filamento");
+      it.printf(10, 0, "%2.0f %2.0f%%", id(temp_fil).state, id(hum_fil).state);
+      it.printf(0, 1, "Ambiente");
+      it.printf(10, 1, "%2.0f %2.0f%%", id(temp_amb).state, id(hum_amb).state);
+
+# ---------- Backlight con apagado automatico ----------
+switch:
+  - platform: template
+    name: "Luz LCD"
+    id: sw_backlight
+    optimistic: true
+    restore_mode: ALWAYS_OFF            # no recuerda estado; on_boot la enciende y el script la apaga
+    turn_on_action:
+      - lambda: 'id(lcddisp).backlight();'
+      - script.execute: apagar_luz      # arranca (o reinicia) la cuenta regresiva
+    turn_off_action:
+      - script.stop: apagar_luz
+      - lambda: 'id(lcddisp).no_backlight();'
+
+script:
+  - id: apagar_luz
+    mode: restart                       # si se vuelve a encender, la cuenta empieza de cero
+    then:
+      - delay: ${backlight_timeout}
+      - switch.turn_off: sw_backlight
+
+# ---------- Boton fisico (pulsador entre D7 y GND) ----------
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO13             # D7
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Boton Luz LCD"
+    on_press:
+      - switch.toggle: sw_backlight
