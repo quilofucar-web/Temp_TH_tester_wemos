@@ -327,6 +327,39 @@ Registro histórico del proyecto: una entrada por día/sesión, con lo que se hi
 - Opcional: quitar o tapar el LED rojo del PCF8574.
 - Después: sensor remoto y cápsula (D-34).
 
+### 2026-10-19 (tarde) — Repo público en GitHub
+
+**Objetivo:** dejar el repo listo para hacerlo público, sin datos del trabajo ni archivos de terceros.
+
+**Qué se hizo:**
+- Revisión completa del repo:
+  - Bloqueos: los 35 commits tenían como autor el correo corporativo; había 7 STL de terceros sin origen ni licencia registrados.
+  - Detalles: mención del entorno corporativo en `CLAUDE.md`, `DesignerUserId` de Bambu en los 3MF y falta de `LICENSE`.
+  - Sin problemas: secretos (WiFi por `!secret`), rutas de usuario, tamaño.
+- Los 7 STL de `externalfiles/` salen del repo (`.gitignore`: `externalfiles/*.stl`); siguen en local. Los 2 tests que comparan el conector contra el STL original se saltan solos si falta (7 pasan y 2 se saltan sin él).
+- Créditos (README y `cad/hsw_connector.py`):
+  - Conector HSW: autor desconocido (letras "XYZ" en la cara trasera), reinterpretado; todos los derechos son de su autor y queda fuera de la licencia.
+  - Componentes: modelos 3D de la biblioteca de EasyEDA, solo referencia, no incluidos.
+  - Pared HSW: sistema de terceros, no incluida.
+- `LICENSE` MIT con la excepción del conector. Se quitó la mención corporativa de `CLAUDE.md` y se borró el `DesignerUserId` de los 3 3MF.
+- Historial nuevo en la rama `publico` (`git checkout --orphan`): 1 commit (`6fbafbc`) con autor `quilofucar@gmail.com`. Carlos borró el repo en GitHub y lo recreó público y vacío; se subió `publico` como `main`.
+- Ramas locales: `main` = versión limpia enlazada a `origin/main`; `respaldo-historial-trabajo` = historial anterior, sin enlace a GitHub y **nunca se sube**.
+- Git: `user.name` / `user.email` personales en el repo y como **globales** en la máquina. La causa del correo del trabajo: sin correo global, git lo armaba con el usuario de Windows y el dominio.
+- Regla global agregada a `~/.claude/extras.md` (2026-10-19): nunca subir el correo ni datos del trabajo; checklist antes de publicar un repo.
+
+**Decisiones:**
+- **D-38 — Historial nuevo y repo recreado** en vez de reescribir `main` y hacer force push. Alternativa: `push --force` sobre el repo existente. Razón: GitHub conserva los commits viejos y muestra los force push en *Activity*; el `main` local se conserva como respaldo.
+- **D-39 — STL de terceros fuera del repo público**, citando su origen. Alternativa: publicarlos. Razón: no se sabe su licencia; los componentes se descargan de EasyEDA.
+- **D-40 — Licencia MIT** para el diseño propio, con excepción para el conector HSW. Razón: Carlos quiere que cualquiera lo use y lo mejore.
+
+**Problemas y solución:**
+- El correo corporativo estaba en todo el historial → historial nuevo (D-38) y correo personal global en git.
+- El permiso automático bloqueó reescribir `main` → rama huérfana nueva sin tocar `main`.
+
+**Archivos:** `.gitignore`, `LICENSE` (nuevo), `README.md`, `CLAUDE.md`, `cad/hsw_connector.py`, `cad/test_hsw_connector.py`, los 3 `externalfiles/3mfs/*.3mf`; `docs/bitacora.md`.
+
+**Pendientes:** foto del medidor montado en la pared (README); ver la fecha y la hora en la pantalla (v2); opcional: LED rojo del PCF8574; después: sensor remoto y cápsula (D-34).
+
 ---
 
 ## 4. Lecciones aprendidas

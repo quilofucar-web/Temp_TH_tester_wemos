@@ -97,21 +97,25 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 | Sin offset de temperatura (~1 °C de diferencia) | Humedad coincide; parece error propio del BME (±1 °C) | D-35 |
 | Firmware v2: hora de HA en la 2a fila sin remoto; versión en HA | El remoto está en pausa; saber qué versión corre | D-36 |
 | Sin labio entre cajas ni nuevas versiones de la carcasa | Ya funciona; queda como lección | D-37 |
+| Repo público con historial nuevo (repo recreado, sin force push) | Sacar el correo del trabajo del historial | D-38 |
+| STL de terceros fuera del repo público; se cita su origen | Licencia desconocida; componentes de EasyEDA | D-39 |
+| Licencia MIT (excepción: conector HSW) | Que cualquiera lo use y lo mejore | D-40 |
 
 ## Estructura de carpeta y archivos clave
 
 - `cad/parameters.py` — fuente única de verdad (HSW, conector, componentes medidos, carcasa, botón, BME, rejillas)
 - `cad/geom.py` — primitivas (`box_between`, `cyl_y`, `cone_y`, `overlap_volume`, rejilla hexagonal)
 - `cad/components.py` — envolventes de componentes en coordenadas globales (placa por partes, cable USB, LCD y su cable, botón, BME)
-- `cad/hsw_connector.py` — clon paramétrico del conector HSW
+- `cad/hsw_connector.py` — reinterpretación paramétrica del conector HSW (autor original desconocido; fuera de la licencia MIT)
 - `cad/tapa_trasera.py`, `cad/caja_trasera.py`, `cad/caja_delantera.py` — las 3 piezas (`build_global()` / `build_print()`)
 - `cad/boton.py` — alojamiento del botón (variantes de sujeción; vigente: clip)
 - `cad/ensamble.py` — ensamble STEP de revisión (piezas en gris, envolventes en naranja)
 - `cad/prueba_frente.py`, `cad/prueba_boton.py`, `cad/tapa_trasera_prueba.py` — piezas de prueba
 - `cad/cq_utils.py` (export versionado STL+STEP y de ensambles), `cad/stl_ref.py` (lector de STL con numpy)
-- `cad/test_*.py` — 66 tests; correr con `cd cad && python3 -m pytest -q`
+- `cad/test_*.py` — 66 tests (2 se saltan si falta el STL del conector, que no se publica); correr con `cd cad && python3 -m pytest -q`
 - `output/` — exportaciones STL/STEP versionadas (`_1`, `_2`...); vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `frente_hexagonos_3.png`, `insertos_caja_trasera_1.png` / `insertos_caja_delantera_1.png` (mapa de insertos y tornillos).
 - `esphome/bmetesting_2.yaml` — firmware ESPHome vigente (versión 2: hora en la 2a fila; `bmetesting_1.yaml` queda como histórico)
+- `LICENSE` — MIT, con excepción para el conector HSW
 - `README.md` — presentación del repo: estado, carcasa, electrónica, BOM, resumen y lecciones
 - `docs/bitacora.md` — **registro histórico del proyecto**
 - `docs/fase2-armado-electrico.md` — guía de banco (pines, CAT6, prueba, cambios al YAML)
