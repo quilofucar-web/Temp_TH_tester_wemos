@@ -150,8 +150,8 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - **Carcasa terminada y montada en la pared** (2026-10-19). No se imprimen más versiones (D-37).
 - **Pendientes:**
   1. Foto del medidor montado en la pared (Carlos la pasa): agregarla al README y al proyecto.
-  2. Ver en la pantalla la fecha y la hora de la v2 (el apagado de la luz a los 30 s ya se probó desde HA).
-  3. Opcional: quitar o tapar el LED rojo de encendido del PCF8574 (no se apaga por software).
+- **Cerrados (2026-10-24):** la fecha y la hora de la v2 se ven bien en la pantalla; el LED rojo
+  del PCF8574 se queda como está.
 - Después: sensor remoto y cápsula (D-34).
 
 ## Historial
