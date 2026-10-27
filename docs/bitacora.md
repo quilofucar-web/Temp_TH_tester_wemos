@@ -360,6 +360,18 @@ Registro histórico del proyecto: una entrada por día/sesión, con lo que se hi
 
 **Pendientes:** foto del medidor montado en la pared (README); ver la fecha y la hora en la pantalla (v2); opcional: LED rojo del PCF8574; después: sensor remoto y cápsula (D-34).
 
+### 2026-10-24 → 2026-10-27 — Pendientes cerrados y fotos finales
+
+**Objetivo:** cerrar los pendientes de la carcasa.
+
+**Qué se hizo:**
+- 2026-10-24: la fecha y la hora de la v2 se ven bien en la pantalla; el LED rojo del PCF8574 se queda como está.
+- 2026-10-27: Carlos pasó 2 fotos del medidor en la pared HSW (tomadas el 2026-10-24 a las 21:55), con la luz de la pantalla encendida y apagada. Se agregaron al README como `docs/img/medidor_pared_1.jpg` y `_2.jpg`, reducidas a 1600 × 1200 y **sin metadatos EXIF** (traían GPS y el nombre del autor; el repo es público).
+
+**Archivos:** `docs/img/medidor_pared_1.jpg`, `docs/img/medidor_pared_2.jpg` (nuevos), `README.md`, `CLAUDE.md`, `docs/bitacora.md`.
+
+**Pendientes:** ninguno de la carcasa; después: sensor remoto y cápsula (D-34).
+
 ---
 
 ## 4. Lecciones aprendidas

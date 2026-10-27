@@ -6,13 +6,16 @@ Mide en 2 puntos:
 - **Ambiente:** BME280 dentro de la carcasa, separado del calor del Wemos. Dirección I2C 0x76.
 - **Caja de filamentos:** BME280 remoto conectado por CAT6, dirección 0x77. *Pendiente:* por ahora solo funciona el sensor de ambiente.
 
-## Estado (2026-10-19)
+| Luz encendida | Luz apagada |
+|---|---|
+| ![Medidor con la luz de la pantalla encendida](docs/img/medidor_pared_1.jpg) | ![Medidor con la luz de la pantalla apagada](docs/img/medidor_pared_2.jpg) |
+
+## Estado (2026-10-27)
 
 - **Carcasa terminada y colgada en la pared HSW.** Todo cabe, el USB entra bien y el firmware v2 funciona: Home Assistant ve el dispositivo y la luz de la pantalla se apaga sola a los 30 s.
 - Tres días de prueba continua: la humedad coincide con otros medidores y la temperatura difiere ~1 °C (sin offset).
-- Pendientes:
-  - Agregar una foto del medidor montado en la pared.
-  - Más adelante: la cápsula del sensor remoto.
+- En la pantalla: la lectura de ambiente arriba y la fecha y la hora abajo (firmware v2, mientras no haya sensor remoto).
+- Pendiente: más adelante, la cápsula del sensor remoto.
 
 ## Carcasa
 

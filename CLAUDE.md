@@ -148,10 +148,11 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 ## Estado actual y próximos pasos
 
 - **Carcasa terminada y montada en la pared** (2026-10-19). No se imprimen más versiones (D-37).
-- **Pendientes:**
-  1. Foto del medidor montado en la pared (Carlos la pasa): agregarla al README y al proyecto.
 - **Cerrados (2026-10-24):** la fecha y la hora de la v2 se ven bien en la pantalla; el LED rojo
   del PCF8574 se queda como está.
+- **Cerrado (2026-10-27):** fotos del medidor montado en la pared (`docs/img/medidor_pared_1.jpg`,
+  luz encendida, y `_2`, apagada; reducidas a 1600 px y sin metadatos EXIF) en el README.
+- Sin pendientes de la carcasa.
 - Después: sensor remoto y cápsula (D-34).
 
 ## Historial
