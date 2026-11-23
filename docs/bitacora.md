@@ -372,6 +372,38 @@ Registro histórico del proyecto: una entrada por día/sesión, con lo que se hi
 
 **Pendientes:** ninguno de la carcasa; después: sensor remoto y cápsula (D-34).
 
+### 2026-11-23 — Medidor de corriente INA por el puerto del CAT6 (definición, sin diseño)
+
+**Objetivo:** revisar el estado del proyecto y definir qué hace falta para agregar un medidor INA (V, A, W) en una cápsula enchufable por el CAT6.
+
+**Qué se hizo:**
+- Revisión de `CLAUDE.md`, `esphome/bmetesting_2.yaml` y de D-16, D-31 y D-34: el bus de sensores (D1/D2, 3.3 V) ya declara el 0x77, que no responde. La carcasa ya tiene la muesca del CAT6 (D-31). No está registrado si el conector de 90° de 6 pines se soldó en la placa ni qué lleva cada pin.
+- Inventario consultado (sin cambios): no hay ningún INA ni conector RJ45/JST; hay `CON-borne-3p` ×15 (C02).
+- Comparación de modelos con shunt R100: INA219 (26 V, ±3.2 A), INA226 (36 V, 16 bits, **±0.8 A**), INA3221 (26 V, 3 canales, ±1.6 A). Rango de uso según Carlos: de 3.3 a 12 V y hasta ~1 A (ESP y Arduino).
+- 3 pendientes de Carlos en el repo de pendientes (`temp-th`): confirmar el INA y su shunt (ya estaba), revisar el conector de 6 pines y el CAT6, y medir la bornera de 3 polos.
+
+**Decisiones:**
+- **D-41 — Puerto I2C genérico en la cápsula:** el CAT6 queda fijo en la carcasa y termina en un **Dupont hembra de 4 pines** en el orden **GND, 3V3, SDA, SCL** (el de Qwiic/STEMMA). La cápsula lleva un alojamiento asimétrico y la marca del pin 1. Al revés no daña nada: el módulo no responde. Alternativas: desconectar en la placa; JST-XH (con traba, no está en el inventario). Razón: poder conectar otros módulos I2C cambiando solo el bloque del YAML; el Dupont ya lo tiene Carlos.
+- **D-42 — INA en la cápsula con el shunt en el lado alto (+)** y una bornera de 3 polos **IN+ / OUT+ / GND** (`CON-borne-3p`). La cápsula es de base plana y se itera. Alternativa: bananas de 4 mm. Razón: la tierra común por el CAT6 pondría en corto un shunt en el lado bajo; el GND del CAT6 es solo referencia (la corriente regresa por su propio cable); las borneras conectan fácil y seguro. Si es un INA226 con shunt R100, solo llega a 0.8 A.
+- **D-43 — Firmware v3 (por hacer):**
+  - El módulo queda siempre en el YAML; si falta, solo falla ese sensor. ESPHome no lo vuelve a buscar hasta reiniciar.
+  - 2a fila: el módulo, si está conectado; si no, la fecha y la hora. El BME de filamentos queda declarado, pero es probable que no se use.
+  - Botón: 1 clic = luz por 30 s (responde ~0.4 s después); 2 clics = **modo banco** (luz fija y refresco de 1 s; se conserva después de reiniciar); clic largo (~3 s) = reinicio.
+  - En HA: V, A, W, V del shunt y Wh; botones de puesta a cero de la energía y "Reiniciar"; interruptor "Modo banco".
+  - Alternativa: un botón aparte. Razón: no cambia la carcasa (D-37).
+- D-34 queda **sustituida en parte**: el puerto del sensor remoto se usa para la cápsula del INA.
+
+**Problemas y solución:** ninguno.
+
+**Archivos:** `docs/bitacora.md`, `CLAUDE.md`.
+
+**Pendientes:**
+1. Confirmar el INA y su shunt.
+2. Revisar el conector de 6 pines de la placa y el CAT6.
+3. Medir la bornera de 3 polos.
+
+Después: boceto de la cápsula en PNG y `bmetesting_3.yaml`.
+
 ---
 
 ## 4. Lecciones aprendidas

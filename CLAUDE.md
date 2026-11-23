@@ -10,7 +10,7 @@ Punto de entrada para Claude Code. Aquí vive solo el **estado vigente** del pro
 
 Diseñar en CadQuery e imprimir en FDM una **carcasa para un monitor ambiental** (ESP8266 Wemos D1 mini + ESPHome) montada en una **pared HSW (honeycomb storage wall)**, más una **cápsula aparte para el sensor remoto**. El frente muestra un LCD 16×2 (+ botón de backlight) con temperatura y humedad de dos puntos: **ambiente** (BME280 en la carcasa, aislado del calor de la electrónica) y **caja de filamentos** (BME280 remoto por cable CAT6). El circuito ya está validado en protoboard; este proyecto es sobre todo el diseño mecánico.
 
-**Estado (2026-10-19):** **carcasa terminada**: las 3 piezas impresas en PETG rojo (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`), armadas y **colgadas en la pared HSW**. 96 × 60 (cabe en el lugar de Carlos, máx. 100 de ancho). Lleva 3 días funcionando: humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35). Firmware v2 instalado. Sensor remoto en pausa (D-34). Ver "Estado actual y próximos pasos".
+**Estado (2026-10-19):** **carcasa terminada**: las 3 piezas impresas en PETG rojo (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`), armadas y **colgadas en la pared HSW**. 96 × 60 (cabe en el lugar de Carlos, máx. 100 de ancho). Lleva 3 días funcionando: humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35). Firmware v2 instalado. Sensor remoto en pausa (D-34). Siguiente: **cápsula con medidor INA** (V, A, W) por el puerto del CAT6 (D-41 a D-43). Ver "Estado actual y próximos pasos".
 
 ## Entorno y restricciones duras
 
@@ -50,7 +50,7 @@ Detalle y razones en `docs/superpowers/specs/2026-09-25-carcasa-monitor-design.m
 - **Botón (D-28):** táctil 12 × 12 momentáneo; **clip con ceja de 0.70 y brazo de 0.6**, sin pegamento.
 - **Rejillas (D-23, D-30):** hexagonales de 3.5. Frente: zona bajo la ventana con 3 mm de margen + columna en zigzag de 5 por lado + 5 arriba de la pantalla + 3 arriba del botón (47 en total; simétrica). Caja delantera también en sus paredes inferior y superior; caja trasera en sus paredes inferior y superior (chimenea).
 - **Paso de cables de la divisoria** (botón y BME): 8 × 14, a la izquierda de la placa, abajo (1.5 del piso; D-32).
-- **Sensor remoto (D-01, D-31):** I2C directo por CAT6 (1–1.5 m), SDA y SCL en pares distintos. Sale por una **muesca en la pared superior de la caja trasera**, al centro, abierta hacia la tapa; alivio con un cincho por dentro. En la placa: conector de 90° delgado sobre 6 pines al centro de la orilla opuesta al USB. Cápsula aparte atornillada al MDF; **la bornera de 4 polos va solo en la cápsula**.
+- **Puerto del CAT6 y cápsula (D-01, D-31, D-41, D-42):** I2C directo por CAT6 (1–1.5 m), SDA y SCL en pares distintos. Sale por una **muesca en la pared superior de la caja trasera**, al centro, abierta hacia la tapa; alivio con un cincho por dentro. En la placa: conector de 90° delgado sobre 6 pines al centro de la orilla opuesta al USB (falta confirmar si está soldado y su asignación). El CAT6 queda fijo en la carcasa y termina en un **Dupont hembra de 4 pines GND / 3V3 / SDA / SCL** (orden Qwiic): puerto I2C genérico. **Cápsula** de base plana con el **INA** (shunt en el **lado alto**, por la tierra común del CAT6) y bornera de 3 polos **IN+ / OUT+ / GND** (`CON-borne-3p`); alojamiento asimétrico del Dupont con marca del pin 1.
 - **Electrónica:** sensores SDA D1 / SCL D2 (así quedó soldada la placa; la guía de fase 2 dice al revés), LCD D6/D5 (bus aparte, 0x27), botón D7 a GND. **0x76 = ambiente**, **0x77 = filamentos**. Backlight: se enciende con el botón o al arrancar y se apaga sola a los 30 s.
 
 ## Especificaciones y parámetros
@@ -93,13 +93,16 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 | CAT6 por muesca superior abierta a la tapa | Se arma sin cortar ni recrimpar el cable | D-31 |
 | Paso de cables del botón y BME abajo | A la altura de los 2; a la derecha está la placa | D-32 |
 | Avellanado de 90° en los barrenos del juego B de la tapa | Los M3×8 son de cabeza cónica | D-33 |
-| Sensor remoto y cápsula en pausa; solo ambiente | Decisión de Carlos | D-34 |
+| Sensor remoto y cápsula en pausa; solo ambiente (parcialmente sustituida por D-41/D-42) | Decisión de Carlos | D-34 |
 | Sin offset de temperatura (~1 °C de diferencia) | Humedad coincide; parece error propio del BME (±1 °C) | D-35 |
 | Firmware v2: hora de HA en la 2a fila sin remoto; versión en HA | El remoto está en pausa; saber qué versión corre | D-36 |
 | Sin labio entre cajas ni nuevas versiones de la carcasa | Ya funciona; queda como lección | D-37 |
 | Repo público con historial nuevo (repo recreado, sin force push) | Sacar el correo del trabajo del historial | D-38 |
 | STL de terceros fuera del repo público; se cita su origen | Licencia desconocida; componentes de EasyEDA | D-39 |
 | Licencia MIT (excepción: conector HSW) | Que cualquiera lo use y lo mejore | D-40 |
+| Puerto I2C genérico: CAT6 fijo, Dupont 4 pines GND/3V3/SDA/SCL en la cápsula | Otros módulos I2C cambiando solo el YAML | D-41 |
+| INA con shunt en el lado alto, bornera 3 polos IN+/OUT+/GND, 3.3–12 V y ≤ 1 A | La tierra común pondría en corto un shunt bajo | D-42 |
+| Firmware v3: módulo en la 2a fila; 1 clic luz, 2 clics modo banco, clic largo reinicio; todo en HA | Un solo botón, sin cambiar la carcasa | D-43 |
 
 ## Estructura de carpeta y archivos clave
 
@@ -153,7 +156,11 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - **Cerrado (2026-10-27):** fotos del medidor montado en la pared (`docs/img/medidor_pared_1.jpg`,
   luz encendida, y `_2`, apagada; reducidas a 1600 px y sin metadatos EXIF) en el README.
 - Sin pendientes de la carcasa.
-- Después: sensor remoto y cápsula (D-34).
+- **Siguiente: cápsula del medidor INA (D-41 a D-43).** Faltan 3 datos de Carlos (en sus pendientes, proyecto `temp-th`):
+  1. Qué INA es y qué shunt trae (con INA226 + R100 solo llega a 0.8 A).
+  2. Si el conector de 90° de 6 pines está soldado en la placa, qué lleva cada pin y si el CAT6 está armado.
+  3. Medidas de la bornera de 3 polos (C02).
+- Después: boceto de la cápsula en PNG → modelo CadQuery → `esphome/bmetesting_3.yaml`.
 
 ## Historial
 
