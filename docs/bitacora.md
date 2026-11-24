@@ -404,6 +404,44 @@ Registro histórico del proyecto: una entrada por día/sesión, con lo que se hi
 
 Después: boceto de la cápsula en PNG y `bmetesting_3.yaml`.
 
+### 2026-11-24 — INA219, borneras y conector del puerto del CAT6 (bocetos, sin modelo)
+
+**Objetivo:** cerrar los 3 datos pendientes de la cápsula del INA (D-41 a D-43) y bocetar la cápsula y su conector.
+
+**Qué se hizo:**
+- Inventario consultado (sin cambios): el INA es `MOD-INA219` (GY-219, 1 pieza, C26; 6 pines al frente y bornera de 2 atrás). `CON-borne-3p` ×15 (C02), `CON-borne-2p-negro` ×8 (C01). No hay Dupont ni tiras de pines registrados.
+- El conector de 90° de 6 pines **no está soldado** en la placa: la asignación de pines y el armado del CAT6 se definen en el diseño.
+- Análisis del riesgo de llevar la tierra en un conector aparte: (1) olvidarla da una lectura de voltaje sin sentido y sin aviso, y puede sacar VIN± del rango de modo común (0–26 V respecto a GND); (2) la bornera del módulo va soldada a su placa: la fuerza del desarmador y del cable va a las soldaduras. Ambos se mitigan con la disposición de D-45.
+- Bocetos 2D (cotas nominales, POR MEDIR): `output/boceto_capsula_1.png` (cápsula ≈ 46 mm de ancho) y `output/boceto_conector_2.png` (conector; `_1` tenía el orden de pines sin espejar en la cara del cable). Geometría OpenLOCK tomada de `c:\marco-rompecabezas\cad\parameters.py` (`OL2_*`) y `cad/openlock_hembra.py`. Los scripts de los bocetos no se conservaron (solo los PNG).
+- Pendientes de Carlos en CQX (`temp-th`): completado "revisar el conector de 6 pines"; "medir la bornera de 3 polos" se cambió a la de **2 polos negra**; nuevos: leer el shunt del INA219, medir el módulo y su bornera, y medir las tiras de pines 1×4 (todos para el 2026-11-25). Se borró de la bandeja local de pendientes un archivo de hacc del 2026-11-13 que nunca se subió.
+
+**Decisiones:**
+- **D-44 — El INA es el INA219 (GY-219)** del inventario. Con shunt R100: 26 V y ±3.2 A, suficiente para 3.3–12 V y ≤ 1 A. Dirección 0x40 (no choca con 0x76 ni 0x27). Falta confirmar el marcado del shunt.
+- **D-45 — Borneras de la cápsula (sustituye la parte de la bornera de D-42):** IN+ / OUT+ en la bornera propia del módulo (VIN+ = fuente, VIN− = carga) y **GND en una `CON-borne-2p-negro` con los 2 polos puenteados** (llegan el negativo de la fuente y el de la carga), en una cuna impresa, unida con un cable al GND del módulo. Las 2 borneras en la misma cara y en una sola fila de 4 tornillos; **costilla bajo la bornera del módulo** hasta la base; el módulo en 2 postes. Alternativa: la bornera de 3 polos sola (D-42). Razón: propuesta de Carlos, más simple y sin soldar la corriente; la fila única evita olvidar la tierra y la costilla protege las soldaduras.
+- **D-46 — Conector de 2 partes en el puerto del CAT6 (detalla D-41):**
+  - Lado del cable (libre): **tira hembra 1×4** con el CAT6 **soldado** (es de cobre sólido: un crimpado Dupont agarra mal) y termofil, más un cincho o abrazadera sobre la funda.
+  - Lado de la cápsula: **tira macho 1×4**, con cables al header del módulo (su orden VCC GND SCL SDA no coincide con GND 3V3 SDA SCL).
+  - **Pin impreso Ø3 y hueco cruzados**, ~2 mm más largos que los pines metálicos. **Clip OpenLOCK** de tamaño completo, abajo de los pines (al revés no entra). El clip entra en la dirección de empuje y cierra con snap en los 2 bolsillos.
+  - Orden al empujar: clip (10.8 mm), pines Ø3 (≈ 7.5) y Dupont (≈ 5.5). Cara de ≈ 25 × 13 mm; la cápsula solo lleva el bolsillo, y este diseño se reutiliza en cápsulas futuras.
+  - **Clip suelto pegado con cianoacrilato** solo en la mitad del lado del cable, sin pasar de la cintura.
+  - Alternativas: clip integrado a la parte del cable (Carlos prefirió el suelto); gancho integrado tipo RJ45 (más chico, pero exige pruebas, D-28).
+  - Razón: idea de Carlos de una orientación con pin y hueco impresos; el OpenLOCK ya está probado en PETG y al pegarlo nunca se queda en la cápsula.
+- Las tiras de pines **no se dan de alta** en el inventario por ahora (Carlos): se usan en el diseño con medidas nominales.
+
+**Problemas y solución:** propuse al principio que el clip OpenLOCK bajara desde arriba. Al revisar el código del rompecabezas, el clip entra en la dirección de empuje: se corrigió antes de decidir.
+
+**Parámetros definidos (nominales, por medir):** GY-219 25.5 × 22.3; borneras de paso 5.08; bolsillo OpenLOCK `OL2_*` del rompecabezas (boca 14.0, profundidad 10.8, espesor 4.2); pines guía Ø3 con hueco de +0.2.
+
+**Archivos:** `output/boceto_capsula_1.png`, `output/boceto_conector_1.png`, `output/boceto_conector_2.png` (nuevos, fuera de git), `docs/bitacora.md`, `CLAUDE.md`.
+
+**Pendientes (Carlos, 2026-11-25):**
+1. Leer el marcado del shunt del INA219.
+2. Medir la bornera de 2 polos negra (A–F).
+3. Medir el módulo GY-219 y su bornera.
+4. Medir las tiras de pines macho y hembra 1×4.
+
+Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
+
 ---
 
 ## 4. Lecciones aprendidas

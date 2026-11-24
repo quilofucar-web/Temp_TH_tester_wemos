@@ -10,7 +10,7 @@ Punto de entrada para Claude Code. Aquí vive solo el **estado vigente** del pro
 
 Diseñar en CadQuery e imprimir en FDM una **carcasa para un monitor ambiental** (ESP8266 Wemos D1 mini + ESPHome) montada en una **pared HSW (honeycomb storage wall)**, más una **cápsula aparte para el sensor remoto**. El frente muestra un LCD 16×2 (+ botón de backlight) con temperatura y humedad de dos puntos: **ambiente** (BME280 en la carcasa, aislado del calor de la electrónica) y **caja de filamentos** (BME280 remoto por cable CAT6). El circuito ya está validado en protoboard; este proyecto es sobre todo el diseño mecánico.
 
-**Estado (2026-10-19):** **carcasa terminada**: las 3 piezas impresas en PETG rojo (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`), armadas y **colgadas en la pared HSW**. 96 × 60 (cabe en el lugar de Carlos, máx. 100 de ancho). Lleva 3 días funcionando: humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35). Firmware v2 instalado. Sensor remoto en pausa (D-34). Siguiente: **cápsula con medidor INA** (V, A, W) por el puerto del CAT6 (D-41 a D-43). Ver "Estado actual y próximos pasos".
+**Estado (2026-10-19):** **carcasa terminada**: las 3 piezas impresas en PETG rojo (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`), armadas y **colgadas en la pared HSW**. 96 × 60 (cabe en el lugar de Carlos, máx. 100 de ancho). Lleva 3 días funcionando: humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35). Firmware v2 instalado. Sensor remoto en pausa (D-34). Siguiente: **cápsula con INA219** (V, A, W) y conector de 2 partes con clip OpenLOCK por el puerto del CAT6 (D-41 a D-46); bocetos listos, faltan medidas. Ver "Estado actual y próximos pasos".
 
 ## Entorno y restricciones duras
 
@@ -50,7 +50,9 @@ Detalle y razones en `docs/superpowers/specs/2026-09-25-carcasa-monitor-design.m
 - **Botón (D-28):** táctil 12 × 12 momentáneo; **clip con ceja de 0.70 y brazo de 0.6**, sin pegamento.
 - **Rejillas (D-23, D-30):** hexagonales de 3.5. Frente: zona bajo la ventana con 3 mm de margen + columna en zigzag de 5 por lado + 5 arriba de la pantalla + 3 arriba del botón (47 en total; simétrica). Caja delantera también en sus paredes inferior y superior; caja trasera en sus paredes inferior y superior (chimenea).
 - **Paso de cables de la divisoria** (botón y BME): 8 × 14, a la izquierda de la placa, abajo (1.5 del piso; D-32).
-- **Puerto del CAT6 y cápsula (D-01, D-31, D-41, D-42):** I2C directo por CAT6 (1–1.5 m), SDA y SCL en pares distintos. Sale por una **muesca en la pared superior de la caja trasera**, al centro, abierta hacia la tapa; alivio con un cincho por dentro. En la placa: conector de 90° delgado sobre 6 pines al centro de la orilla opuesta al USB (falta confirmar si está soldado y su asignación). El CAT6 queda fijo en la carcasa y termina en un **Dupont hembra de 4 pines GND / 3V3 / SDA / SCL** (orden Qwiic): puerto I2C genérico. **Cápsula** de base plana con el **INA** (shunt en el **lado alto**, por la tierra común del CAT6) y bornera de 3 polos **IN+ / OUT+ / GND** (`CON-borne-3p`); alojamiento asimétrico del Dupont con marca del pin 1.
+- **Puerto del CAT6 y cápsula (D-01, D-31, D-41, D-42, D-44 a D-46):** I2C directo por CAT6 (1–1.5 m), SDA y SCL en pares distintos. Sale por una **muesca en la pared superior de la caja trasera**, al centro, abierta hacia la tapa; alivio con un cincho por dentro. En la placa: conector de 90° delgado sobre 6 pines al centro de la orilla opuesta al USB (**no está soldado**; la asignación se define en el diseño). El CAT6 queda fijo en la carcasa: puerto I2C genérico **GND / 3V3 / SDA / SCL** (orden Qwiic).
+  - **Conector de 2 partes (D-46):** lado del cable = tira hembra 1×4 con el CAT6 soldado (cobre sólido, sin crimpar) + termofil + cincho en la funda; lado de la cápsula = tira macho 1×4 con cables al header del módulo. Pin impreso Ø3 y hueco cruzados; **clip OpenLOCK** (`OL2_*` del rompecabezas) abajo de los pines, suelto y **pegado del lado del cable**; cara ≈ 25 × 13. Se reutiliza en cápsulas futuras.
+  - **Cápsula** de base plana con el **INA219 GY-219** (D-44; shunt en el **lado alto**, por la tierra común del CAT6): IN+ / OUT+ en la **bornera del módulo** y GND en una **bornera de 2 polos puenteada**, en la misma cara y en una fila; costilla bajo la bornera del módulo y 2 postes (D-45). Boceto: `output/boceto_capsula_1.png`, `output/boceto_conector_2.png`.
 - **Electrónica:** sensores SDA D1 / SCL D2 (así quedó soldada la placa; la guía de fase 2 dice al revés), LCD D6/D5 (bus aparte, 0x27), botón D7 a GND. **0x76 = ambiente**, **0x77 = filamentos**. Backlight: se enciende con el botón o al arrancar y se apaga sola a los 30 s.
 
 ## Especificaciones y parámetros
@@ -101,8 +103,11 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 | STL de terceros fuera del repo público; se cita su origen | Licencia desconocida; componentes de EasyEDA | D-39 |
 | Licencia MIT (excepción: conector HSW) | Que cualquiera lo use y lo mejore | D-40 |
 | Puerto I2C genérico: CAT6 fijo, Dupont 4 pines GND/3V3/SDA/SCL en la cápsula | Otros módulos I2C cambiando solo el YAML | D-41 |
-| INA con shunt en el lado alto, bornera 3 polos IN+/OUT+/GND, 3.3–12 V y ≤ 1 A | La tierra común pondría en corto un shunt bajo | D-42 |
+| INA con shunt en el lado alto, 3.3–12 V y ≤ 1 A (bornera sustituida por D-45) | La tierra común pondría en corto un shunt bajo | D-42 |
 | Firmware v3: módulo en la 2a fila; 1 clic luz, 2 clics modo banco, clic largo reinicio; todo en HA | Un solo botón, sin cambiar la carcasa | D-43 |
+| INA219 GY-219 del inventario (26 V, 3.2 A con R100, 0x40) | Ya lo tiene Carlos; alcanza el rango | D-44 |
+| IN+/OUT+ en la bornera del módulo + GND en bornera de 2 polos puenteada | Más simple; fila única y costilla mitigan los riesgos | D-45 |
+| Conector de 2 partes: tiras 1×4 + pin/hueco Ø3 + clip OpenLOCK pegado del lado del cable | Orientación única, CAT6 soldado, clip ya probado | D-46 |
 
 ## Estructura de carpeta y archivos clave
 
@@ -116,7 +121,7 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - `cad/prueba_frente.py`, `cad/prueba_boton.py`, `cad/tapa_trasera_prueba.py` — piezas de prueba
 - `cad/cq_utils.py` (export versionado STL+STEP y de ensambles), `cad/stl_ref.py` (lector de STL con numpy)
 - `cad/test_*.py` — 66 tests (2 se saltan si falta el STL del conector, que no se publica); correr con `cd cad && python3 -m pytest -q`
-- `output/` — exportaciones STL/STEP versionadas (`_1`, `_2`...); vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `frente_hexagonos_3.png`, `insertos_caja_trasera_1.png` / `insertos_caja_delantera_1.png` (mapa de insertos y tornillos).
+- `output/` — exportaciones STL/STEP versionadas (`_1`, `_2`...); vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `frente_hexagonos_3.png`, `boceto_capsula_1.png` / `boceto_conector_2.png` (bocetos de la cápsula del INA), `insertos_caja_trasera_1.png` / `insertos_caja_delantera_1.png` (mapa de insertos y tornillos).
 - `esphome/bmetesting_2.yaml` — firmware ESPHome vigente (versión 2: hora en la 2a fila; `bmetesting_1.yaml` queda como histórico)
 - `LICENSE` — MIT, con excepción para el conector HSW
 - `README.md` — presentación del repo: estado, carcasa, electrónica, BOM, resumen y lecciones
@@ -156,11 +161,12 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - **Cerrado (2026-10-27):** fotos del medidor montado en la pared (`docs/img/medidor_pared_1.jpg`,
   luz encendida, y `_2`, apagada; reducidas a 1600 px y sin metadatos EXIF) en el README.
 - Sin pendientes de la carcasa.
-- **Siguiente: cápsula del medidor INA (D-41 a D-43).** Faltan 3 datos de Carlos (en sus pendientes, proyecto `temp-th`):
-  1. Qué INA es y qué shunt trae (con INA226 + R100 solo llega a 0.8 A).
-  2. Si el conector de 90° de 6 pines está soldado en la placa, qué lleva cada pin y si el CAT6 está armado.
-  3. Medidas de la bornera de 3 polos (C02).
-- Después: boceto de la cápsula en PNG → modelo CadQuery → `esphome/bmetesting_3.yaml`.
+- **Siguiente: cápsula del INA219 y conector del CAT6 (D-41 a D-46).** Bocetos listos; faltan 4 datos de Carlos (en sus pendientes, proyecto `temp-th`, para el 2026-11-25):
+  1. Marcado del shunt del INA219 (R100 = 0.1 Ω).
+  2. Medidas A–F de la bornera de 2 polos negra (C01).
+  3. Medidas del módulo GY-219 (placa, barrenos, altura abajo) y de su bornera.
+  4. Medidas de las tiras de pines macho y hembra 1×4 (no se dan de alta en el inventario por ahora).
+- Después: modelo CadQuery de la cápsula y del conector → `esphome/bmetesting_3.yaml`.
 
 ## Historial
 
