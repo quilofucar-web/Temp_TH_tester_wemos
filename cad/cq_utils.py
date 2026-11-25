@@ -23,9 +23,11 @@ def next_version_number(sample_path):
     (CLAUDE.md, "Convenciones de codigo")."""
     p = Path(sample_path)
     pattern = re.compile(rf"^{re.escape(p.stem)}_(\d+){re.escape(p.suffix)}$")
+    # Tambien cuenta output/historico/, donde se mueven las versiones viejas
     existing = [
         int(m.group(1))
-        for f in p.parent.glob(f"{p.stem}_*{p.suffix}")
+        for d in (p.parent, p.parent / "historico")
+        for f in d.glob(f"{p.stem}_*{p.suffix}")
         if (m := pattern.match(f.name))
     ]
     return max(existing, default=0) + 1

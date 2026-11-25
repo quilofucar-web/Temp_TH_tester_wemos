@@ -442,6 +442,46 @@ Después: boceto de la cápsula en PNG y `bmetesting_3.yaml`.
 
 Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
 
+### 2026-11-25 — Cupón OpenLOCK, bornera de 2 polos medida y láminas de la cápsula y del conector
+
+**Objetivo:** cerrar las medidas pendientes y dejar el diseño 2D de la cápsula del INA219 y del conector del CAT6.
+
+**Qué se hizo:**
+- Bornera de 2 polos negra (C01) medida por Carlos: 9.97 × 7.85 × 9.97 (tornillos al ras), paso 5.0 (4.92 por fuera con el cero en el grueso del pin; 3.62 por dentro), pin cuadrado 1 × 0.65 (0.65 en la dirección pin a pin) de 4.29 de largo, G1 3.14 / G2 4.15 / H1 3.58 / H2 4.65 (centro del pin a 3.65 de la cara del cable), hueco 4 × 5, E1 0.92 (E2 6.60, difícil de medir). En `cad/parameters.py` (`BORNE2_*`); pendiente cerrado en CQX.
+- Juego del clip OpenLOCK medido en los STEP del rompecabezas: clip 13.2 × 19.5 × 3.5; bolsillo de 4.2 de alto (0.35 por lado), cámara de 13.6 (0.2 por lado), boca de 14.0. `OL2_*` copiados a `cad/parameters.py`.
+- Cupón de retención `cad/cupon_openlock.py` → `output/cupon_openlock_N_1` (bolsillo nominal de 4.2, 17.6 × 12.8 × 8.2) y `cupon_openlock_T_1` (bolsillos de 3.8 con 2 puntos y de 3.6 con 4 puntos, 35.2 × 12.8 × 8.2). Mandados a imprimir; consumo de 5 g del FIL-0014 (laminado de 4.44 g) registrado en el inventario.
+- GY-219 estimado con fotos de internet (`output/ina219_estimado_1.png`, `ina219_foto_web_1.png`): 25.5 × 22.3, 4 barrenos ≈ Ø2.8 a ≈ 21.0 × 17.4, header de 6 pines (VCC GND SCL SDA VIN− VIN+), bornera de paso 3.5. Carlos confirma que el suyo se parece (morado).
+- Láminas técnicas con vistas numeradas y 3D aproximado (CadQuery + matplotlib): `cad/bocetos/lamina_capsula.py` → `output/boceto_capsula_12.png` (vistas 01–08) y `cad/bocetos/lamina_conector.py` → `output/boceto_conector_4.png` (vistas 11–17).
+- Limpieza de `output/`: 42 versiones viejas a `output/historico/`; 15 ensambles viejos y 3 PNG con errores borrados (de 140 a 44 MB). `cq_utils.next_version_number` también cuenta `historico/`.
+- Pendiente nuevo en CQX: contar los insertos M2.5 de C22 (el inventario marca 5 de M2.5×4×3.5 y 20 de M2.5×3×3.5).
+
+**Decisiones:**
+- **D-47 — Retención del clip OpenLOCK sin pegamento (sustituye el "pegado" de D-46):** el bolsillo del lado del cable es más bajo que el nominal (3.6–3.8, según el cupón); el de la cápsula queda en 4.2 y el ancho no se toca. Alternativas: pegarlo con cianoacrilato; apretar el ancho. Razón: si se rompe, el clip se cambia sin reimprimir; apretar el ancho flexionaría más el bulto del clip (D-28), y en el alto sobraban 0.35 por lado (el juego en Z del rompecabezas).
+- **D-48 — Header del GY-219 desoldado:** cables soldados directo a sus huecos; a GND le llegan 2 (conector y bornera GND); VIN−/VIN+ del header sin cable. Alternativas: Dupont sobre el header (cápsula ≈ 25 de alto); cortar los pines y soldar sobre ellos. Razón: cápsula más baja, el orden se acomoda al soldar y no hay 12 V junto al I2C.
+- **D-49 — Conector con Dupont sencillos:** 4 Dupont cortados y pegados con 2 vueltas de cinta de aislar en una ranura de ≈ 11.0 × 3.4 con tope atrás, de los 2 lados; **al ras de la cara** (fondo = largo de la hembra − 0.1; si salen, las caras no cierran y el clip no engancha). Se confirma D-46: machos en la cápsula, hembras en el cable.
+- **D-50 — Cierre de la tapa de la cápsula:** tapa de 3.5, labio de 1.2 × 2.0 con entrada en chaflán de 0.8 × 45° y sin tramo al frente (chocaba con las borneras), 2 lengüetas en las esquinas del frente y 2 M3×8 cónicos avellanados atrás con insertos M3×4×4.2. Alternativas: clips flexibles (D-28); 4 tornillos. Razón: autoalineación desde la primera versión, sin piezas que se rompan ni tornillería de más.
+- **D-51 — Acabado:** esquinas verticales R8 (cápsula) y R6 (conector); orillas sobre la cama en **gota r3.5** (tramo a 45° que entra 2.05 en la cama y luego arco). Alternativas: chaflán de 1.5 o 2; redondeo puro (voladizo > 45°); tapa de 2 con la gota partida o más chica. Razón: se ve redondo y se imprime sin voladizo.
+- **D-52 — Frente simétrico:** 2 ventanas iguales de 9.5 × 6.5 r1, centradas a 8.6 de la base, a 18.8 entre sí y en espejo respecto al centro; postes del módulo de 2.0; separación módulo–GND de 1.0 (cable GND por la pared derecha); bornera GND en cuna de 3.2 con los pines cortados a 2. Cápsula de 52.3 × 44.1 × 19.7. Alternativa: esquinas R4 al frente. Razón: la ventana GND entraba 3.5 en la esquina R8 y caía en la gota, la bornera GND no cabía en el piso (pines de 4.29) y Carlos prefiere la simetría.
+- **D-53 — Tapa con 2 ranuras ovaladas** de 8.0 × 4.5 y 9.5 × 4.5 sobre los tornillos de las borneras, nombres grabados. Alternativa: 4 círculos (pared de 0.3 entre los de paso 3.5).
+- **D-54 — Prensa de costillas para el CAT6 (en lugar del cincho):** canal en U de 5.0 (funda Ø5.5) abierto arriba, 3 costillas de 1.2 × 0.5 (2 en el cuerpo, 1 en la tapa) que hacen una mini S. Alternativas: cincho; camino en S (radio mínimo del CAT6 ~22 mm, no cabe). Razón: menos espacio y sin piezas extra.
+- **D-55 — Pin Ø3 × 7** con base r0.8 y punta en chaflán (debe pasar de 6 para impedir conectar volteado). Plan B: pin metálico (inserto M3 + tornillo sin cabeza, o pasador Ø3).
+- **D-56 — Pieza del cable de 29 × 36 × 19.7:** mismo alto, gota y estilo que la cápsula; bloque macizo al frente de 16 (bolsillo, ranura de hembras de 14.5 y tope); 2 M3 en diagonal + labio, sin lengüetas. El largo se revisa con las piezas reales (podría bajar a ~30).
+- **D-57 — Sin ventilación en la cápsula:** el shunt disipa 0.1 W a 1 A (a 3.2 A serían ~1 W y ahí sí haría falta).
+
+**Problemas y solución:** la vista frontal reveló que la ventana GND entraba 3.5 en la esquina R8 y caía en la gota, y que la bornera GND no cabía en el piso (D-52). La vista 03 estaba dibujada desde adentro y no desde afuera; se espejeó. El numeral de exportación se reiniciaba al mover versiones al histórico; se corrigió en `cq_utils`.
+
+**Parámetros definidos:** `OL2_*`, `OL_CLIP_T=3.5`, `OL_COUPON_WALL=2.0`, `OL_COUPON_TIGHT=(3.8, 3.6)`, `OL_COUPON_DOTS=(2, 4)`, `MARK_DOT_D=1.5`, `MARK_DOT_PITCH=2.0`, `MARK_DOT_DEPTH=0.6`, `BORNE2_*` (`cad/parameters.py`). Los valores de las láminas (D-50 a D-56) viven en `cad/bocetos/`; pasan a `parameters.py` al modelar.
+
+**Archivos:** `cad/parameters.py`, `cad/cq_utils.py`, `cad/cupon_openlock.py`, `cad/bocetos/lamina_capsula.py`, `cad/bocetos/lamina_conector.py`; en `output/` (fuera de git): `cupon_openlock_N_1`, `cupon_openlock_T_1`, `boceto_capsula_11`/`_12`, `boceto_conector_3`/`_4`, `caja_frontal_1`/`_2`, `medidas_bornera_2p_3`/`_4`, `perfil_orilla_1`, `ina219_estimado_1`, `ina219_foto_web_1`, `boceto_tapa_capsula_1`/`_2`, `cupon_openlock_2.png`; `docs/bitacora.md`, `CLAUDE.md`.
+
+**Pendientes (Carlos):**
+1. Medidas reales del GY-219: placa, Ø y separación de barrenos (decide M3 o M2.5) y altura del centro del hueco de su bornera sobre la placa.
+2. Marcado del shunt.
+3. Largo de la carcasa de la hembra Dupont.
+4. Resultado del cupón OpenLOCK.
+5. Contar los insertos M2.5 de C22.
+6. Decidir inserto o autorroscante en los postes del módulo (pregunta abierta).
+
 ---
 
 ## 4. Lecciones aprendidas

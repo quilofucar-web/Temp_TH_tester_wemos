@@ -310,3 +310,45 @@ BME_ZC = BTN_ZC
 BME_HOLES_Z = BME_ZC + BME_W / 2 - BME_HOLE_EDGE
 DIV_SLOT_X = -(PCB_W / 2 + DIV_SLOT_GAP + DIV_SLOT_W / 2)           # -30.5
 DIV_SLOT_ZC = Z_IN0 + DIV_SLOT_FLOOR + DIV_SLOT_H / 2                 # 10.9: a la altura del BME y del boton
+
+# ----------------------------------------------------------------------
+# OPENLOCK (conector del puerto del CAT6, D-46). Bolsillo copiado de
+# c:\marco-rompecabezas\cad\parameters.py (OL2_*, medido sobre el STEP
+# original de OpenLOCK). Clip: Connector_OpenLockClip_Full_Default
+# (13.2 ancho x 19.5 largo x 3.5 grueso).
+# ----------------------------------------------------------------------
+OL2_MOUTH_W = 14.0               # boca (cara de union)
+OL2_MOUTH_DEPTH = 2.0            # tramo recto de la boca
+OL2_MID_W = 12.0                 # ancho tras el escalon
+OL2_WAIST_DEPTH = 5.0            # fin de la rampa
+OL2_WAIST_W = 10.0               # cintura
+OL2_WAIST_STRAIGHT_DEPTH = 6.0   # fin del tramo recto de cintura
+OL2_CHAMBER_W = 13.6             # camara (atrapa el bulto del clip)
+OL2_TOTAL_DEPTH = 10.8           # boca -> fondo de camara
+OL2_BLIND_THICK = 4.2            # alto nominal (clip 3.5: 0.35 por lado)
+OL_CLIP_T = 3.5
+# Cupon de retencion (2026-11-25): el lado del cable aprieta solo el alto
+# para que el clip se quede ahi sin pegamento
+OL_COUPON_WALL = 2.0
+OL_COUPON_TIGHT = (3.8, 3.6)     # alto de los bolsillos apretados
+OL_COUPON_DOTS = (2, 4)          # puntos grabados de cada uno
+MARK_DOT_D = 1.5                 # marcas de variante (extras.md: >= 0.6 de profundidad)
+MARK_DOT_PITCH = 2.0
+MARK_DOT_DEPTH = 0.6
+
+# ----------------------------------------------------------------------
+# BORNERA DE 2 POLOS NEGRA (CON-borne-2p-negro, C01), GND de la capsula
+# (D-45). Medida por Carlos el 2026-11-25. Ejes: largo = de pin a pin,
+# fondo = cara del cable -> cara de atras, alto = base -> arriba.
+# ----------------------------------------------------------------------
+BORNE2_L = 10.0          # largo (medido 9.97)
+BORNE2_D = 7.85          # fondo
+BORNE2_H = 10.0          # alto (medido 9.97); los tornillos no sobresalen
+BORNE2_PITCH = 5.0       # paso pin a pin (medido 4.92); pines centrados a lo largo
+BORNE2_PIN_A = 0.65      # pin cuadrado: lado a lo largo (de pin a pin)
+BORNE2_PIN_B = 1.0       # lado a lo fondo
+BORNE2_PIN_LEN = 4.29    # largo bajo la base
+BORNE2_PIN_Y = 3.65      # cara del cable -> centro del pin (G1 3.14 / G2 4.15; desde atras 4.12)
+BORNE2_HOLE_W = 4.0      # hueco del cable
+BORNE2_HOLE_H = 5.0
+BORNE2_HOLE_Z0 = 0.92    # base -> orilla de abajo del hueco (E1; E2 = 6.60 dificil de medir)
