@@ -18,7 +18,7 @@ Y0 = OUT_D                            # cara de union
 FRONT = 16.0                          # bloque macizo del frente (bolsillo + hembras + tope)
 SLOT_D, STOP_T = 14.5, 1.5            # alojamiento de las hembras y tope
 WIRE_W, WIRE_H = 9.0, 2.0             # paso de cables en el tope (no pasan las hembras)
-POCK_HT = 3.7                         # alto del bolsillo apretado (sale del cupon: 3.6-3.8)
+POCK_HT = 3.8                         # alto del bolsillo apretado (cupon: el de 2 puntos, 2026-11-25)
 POCK_ZC = POCK_Z0 + POCK_H / 2
 PIN_X = CX + FACE_W / 2 - 3           # pin del conector (entra al hueco de la capsula)
 HOLE_X = CX - FACE_W / 2 + 3          # hueco (recibe el pin de la capsula)
@@ -194,7 +194,7 @@ ax.text(lx(HOLE_X), ROW_ZC - 2.9, "hueco", ha="center", fontsize=9)
 ax.text(lx(PIN_X), ROW_ZC - 2.9, "pin Ø3", ha="center", fontsize=9)
 dim(ax, -CW / 2, -2.0, CW / 2, -2.0, f"{CW:.0f}", (0, -1.3))
 dim(ax, CW / 2 + 1.8, 0, CW / 2 + 1.8, OUT_H, f"{OUT_H:.1f}", (2.0, 0))
-dim(ax, -POCK_W / 2 - 1.5, POCK_ZC - POCK_HT / 2, -POCK_W / 2 - 1.5, POCK_ZC + POCK_HT / 2, "3.6–3.8", (-3.2, 0))
+dim(ax, -POCK_W / 2 - 1.5, POCK_ZC - POCK_HT / 2, -POCK_W / 2 - 1.5, POCK_ZC + POCK_HT / 2, "3.8", (-2.4, 0))
 ax.text(0, POCK_ZC, "bolsillo apretado", ha="center", va="center", fontsize=9)
 finish(ax, (-CW / 2 - 9, CW / 2 + 6), (-4.5, OUT_H + 2))
 

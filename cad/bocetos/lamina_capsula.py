@@ -1,4 +1,4 @@
-"""Lamina tecnica de la capsula del INA219 (boceto con medidas aproximadas)."""
+"""Lamina tecnica de la capsula del INA219 (boceto; modulo GY-219 medido el 2026-11-25)."""
 import sys
 import numpy as np
 import cadquery as cq
@@ -13,15 +13,23 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else r"c:\medidorTHR\output\boceto_capsul
 # ---------------- parametros (aprox.)
 WALL, FLOOR, LID, CL = 2.4, 2.0, 3.5, 0.3
 R_OUT, GOTA_R, GOTA_IN = 8.0, 3.5, 2.05
-EX = 0.293 * (R_OUT - WALL) - CL
+IN_R = 2.0                       # radio interior de las esquinas (antes R_OUT - WALL = 5.6)
+EX = 0.293 * (IN_R) - CL
 CLX = CL + EX
-ML, MW, PCB_T = 25.5, 22.3, 1.6
-HX, HY, HOLE_D = 21.0, 17.4, 2.8
-TB_P, TB_L, TB_D, TB_H = 3.5, 7.0, 7.5, 8.5
-POST_H = 2.0                     # sin header abajo (cables soldados desde arriba)
+# GY-219 medido por Carlos (2026-11-25). En la capsula la bornera mira al frente (-Y):
+# ML = lado de la bornera (B 20.3), MW = de la bornera al header (A 20.9).
+ML, MW, PCB_T = 20.3, 20.9, 1.5
+HOLE_D = 2.9                     # 2 barrenos, ambos del lado de la bornera -> M2.5
+HOLE_X0, HOLE_X1 = 1.0 + HOLE_D / 2, ML - (1.1 + HOLE_D / 2)   # D2 / D1 (orilla -> orilla del hueco)
+HOLE_Y = 2.5 + HOLE_D / 2        # E: orilla de la bornera -> centro del barreno
+TB_P, TB_L, TB_D, TB_H = 5.0, 9.7, 10.0, 10.0   # bornera: G1 = G2 = 5.3 (centrada), F 10, J 10
+TB_PIN = 1.5                     # L: pines bajo la placa
+HDR_Y = 1.8                      # header (desoldado): orilla de atras -> fila de pines (aprox.)
+SUP_W, SUP_Y = 1.6, 5.0          # apoyo bajo el lado del header (orilla de atras -> centro)
+POST_H = 3.5                     # inserto M2.5x4x3.5 (barreno 4.5, deja 1 de piso) + M2.5 avellanado
 GL, GD, GH, GP = 10.0, 7.85, 10.0, 5.0
 GAP, WIRE_GAP = 1.0, 5.0         # el cable GND va por la pared derecha
-TBH_Z = 3.0                      # centro del hueco de la bornera del modulo sobre la placa (POR MEDIR)
+TBH_Z = 1.0 + 5.0 / 2            # K 1.0 + medio hueco de 5 (como la bornera de 2 polos)
 G_HOLE_Z0, G_HOLE_H = 0.92, 5.0  # bornera GND (medida)
 WIN_W, WIN_H, WIN_R = 9.5, 6.5, 1.0
 G_PIN_CUT = 2.0                  # pines de la bornera GND cortados
@@ -31,7 +39,6 @@ SLOT_W = 4.5
 FACE_W, FACE_H = 25.0, 13.0
 POCK_W, POCK_H, POCK_D = 14.0, 4.2, 10.8
 ROW_W, ROW_H = 11.0, 3.4
-SCREW_DX = 19.0
 
 _mxc = WALL + CLX + ML / 2
 _gxc = WALL + CLX + ML + GAP + GL / 2
@@ -45,6 +52,7 @@ IN_H = max(POST_H + PCB_T + TB_H, G_BASE - FLOOR + GH) + 1.0
 BODY_H = FLOOR + IN_H
 OUT_H = BODY_H + LID
 CAV_Y1 = WALL + IN_D
+SCREW_DX = OUT_W / 2 - 6.5           # avellanado a >= 3 de la orilla (fillet de la tapa)
 
 mx0, my0 = WALL + CLX, WALL + CLX
 mxc = mx0 + ML / 2
@@ -56,7 +64,7 @@ FACE_Z0 = FLOOR
 POCK_Z0 = FACE_Z0 + 1.6
 ROW_ZC = POCK_Z0 + POCK_H + 3.4
 SCREW_Y = OUT_D - BACK / 2
-posts = [(mxc - HX / 2, my0 + MW / 2 - HY / 2), (mxc + HX / 2, my0 + MW / 2 + HY / 2)]
+posts = [(mx0 + HOLE_X0, my0 + HOLE_Y), (mx0 + HOLE_X1, my0 + HOLE_Y)]
 
 # ---------------- estilo
 RED, BLUE, GRN, GREY = "#c0392b", "#1f6fd1", "#2fa84f", "#555"
@@ -101,7 +109,7 @@ def body3d():
     except Exception:
         pass
     cav = (cq.Workplane("XY").workplane(offset=FLOOR).center(WALL + IN_W / 2, WALL + IN_D / 2)
-           .rect(IN_W, IN_D).extrude(IN_H + 1).edges("|Z").fillet(R_OUT - WALL))
+           .rect(IN_W, IN_D).extrude(IN_H + 1).edges("|Z").fillet(IN_R))
     b = b.cut(cav)
     # ventanas del frente
     for xc in (mxc, gxc):
@@ -124,6 +132,7 @@ def body3d():
     for x, y in posts:
         b = b.union(cq.Workplane("XY").workplane(offset=FLOOR).center(x, y).circle(2.6).extrude(POST_H))
     b = b.union(cq.Workplane("XY").box(TB_L, TB_D, POST_H).translate((mxc, my0 + TB_D / 2, FLOOR + POST_H / 2)))
+    b = b.union(cq.Workplane("XY").box(ML - 6.0, SUP_W, POST_H).translate((mxc, my0 + MW - SUP_Y, FLOOR + POST_H / 2)))
     return b
 
 
@@ -143,9 +152,9 @@ def lid3d():
         l = l.cut(cq.Workplane("XY").add(cone))
     ow, od = IN_W - 2 * LIP_CL, IN_D - 2 * LIP_CL
     ring = (cq.Workplane("XY").workplane(offset=BODY_H - LIP_H).center(WALL + IN_W / 2, WALL + IN_D / 2)
-            .rect(ow, od).extrude(LIP_H).edges("|Z").fillet(R_OUT - WALL - LIP_CL))
+            .rect(ow, od).extrude(LIP_H).edges("|Z").fillet(IN_R - LIP_CL))
     inner = (cq.Workplane("XY").workplane(offset=BODY_H - LIP_H - 1).center(WALL + IN_W / 2, WALL + IN_D / 2)
-             .rect(ow - 2 * LIP_W, od - 2 * LIP_W).extrude(LIP_H + 1).edges("|Z").fillet(R_OUT - WALL - LIP_CL - LIP_W))
+             .rect(ow - 2 * LIP_W, od - 2 * LIP_W).extrude(LIP_H + 1).edges("|Z").fillet(IN_R - LIP_CL - LIP_W))
     ring = ring.cut(inner)
     ring = ring.cut(cq.Workplane("XY").box(OUT_W - 2 * R_OUT, 6, LIP_H + 2).translate((OUT_W / 2, WALL + 2, BODY_H - LIP_H / 2)))
     l = l.union(ring)
@@ -235,36 +244,35 @@ a06 = fig.add_subplot(gs[0:2, 2], projection="3d"); a07 = fig.add_subplot(gs[2:4
 # ---- 01 caja superior
 ax = a01; title(ax, "01 · Caja · vista superior")
 rr(ax, 0, 0, OUT_W, OUT_D, R_OUT, fc=BODY_C, ec=RED, lw=2)
-rr(ax, WALL, WALL, IN_W, IN_D, R_OUT - WALL, fc="white", ec=RED, lw=1)
+rr(ax, WALL, WALL, IN_W, IN_D, IN_R, fc="white", ec=RED, lw=1)
 ax.add_patch(Rectangle((OUT_W / 2 - ROW_W / 2, CAV_Y1), ROW_W, BACK, fc="none", ec=GREY, ls="--"))
 ax.add_patch(Rectangle((OUT_W / 2 - POCK_W / 2, OUT_D - POCK_D), POCK_W, POCK_D, fc="none", ec=GREY, ls=":"))
 for s in (-1, 1):
     ax.add_patch(Circle((OUT_W / 2 + s * SCREW_DX, SCREW_Y), 2.0, fc="#e9c46a", ec="k"))
 ax.add_patch(Rectangle((mx0, my0), ML, MW, fc="#c9a7e6", ec="k"))
-for i, (x, y) in enumerate([(mxc - HX / 2, my0 + MW / 2 - HY / 2), (mxc + HX / 2, my0 + MW / 2 + HY / 2),
-                            (mxc - HX / 2, my0 + MW / 2 + HY / 2), (mxc + HX / 2, my0 + MW / 2 - HY / 2)]):
-    ax.add_patch(Circle((x, y), HOLE_D / 2, fc="white" if i < 2 else "none", ec="k" if i < 2 else "#999",
-                        ls="-" if i < 2 else ":"))
-for i in range(6):
-    ax.add_patch(Rectangle((mxc + (i - 2.5) * 2.54 - 0.45, my0 + MW - 2.6 - 0.45), 0.9, 0.9,
-                           fc="#888" if i < 4 else "white", ec="k", lw=0.6))
+ax.add_patch(Rectangle((mx0 + 3.0, my0 + MW - SUP_Y - SUP_W / 2), ML - 6.0, SUP_W, fc="none", ec=RED, ls="--"))
+for x, y in posts:
+    ax.add_patch(Circle((x, y), HOLE_D / 2, fc="white", ec="k"))
+for i in range(6):   # de izq. a der.: VIN+ VIN- SDA SCL GND VCC (usados los 4 de la derecha)
+    ax.add_patch(Rectangle((mxc + (i - 2.5) * 2.54 - 0.45, my0 + MW - HDR_Y - 0.45), 0.9, 0.9,
+                           fc="#888" if i >= 2 else "white", ec="k", lw=0.6))
 ax.add_patch(Rectangle((mxc - TB_L / 2, my0), TB_L, TB_D, fc="#4da3e0", ec="k"))
 ax.add_patch(Rectangle((gx0, gy0), GL, GD, fc=GRN, ec="k"))
 for s in (-1, 1):
     ax.add_patch(Circle((mxc + s * TB_P / 2, my0 + TB_D / 2), 1.0, fc="#ddd", ec="k"))
     ax.add_patch(Circle((gxc + s * GP / 2, gy0 + GD / 2), 1.2, fc="#ddd", ec="k"))
-hy = my0 + MW - 2.6
+hy = my0 + MW - HDR_Y
 ax.add_patch(Rectangle((gx0 - 0.5, gy0), GL + 1.0, GD, fc="none", ec=RED, lw=1, ls="--"))
 _xw = WALL + IN_W - 1.5
-ax.plot([mxc - 1.5 * 2.54, mxc - 1.5 * 2.54, _xw, _xw, gx0 + GL - 1.0], [hy, hy + 2.2, hy + 2.2, gy0 + GD / 2, gy0 + GD / 2],
+ax.plot([mxc + 1.5 * 2.54, mxc + 1.5 * 2.54, _xw, _xw, gx0 + GL - 1.0], [hy, hy + 2.2, hy + 2.2, gy0 + GD / 2, gy0 + GD / 2],
         color=GRN, ls="--", lw=2)
 for i in range(4):
-    x0 = mxc + (i - 2.5) * 2.54
+    x0 = mxc + (i - 0.5) * 2.54
     xe = OUT_W / 2 + (i - 1.5) * 2.54
     ax.plot([x0, x0, xe, xe], [hy, hy + 3.2 + 0.5 * i, hy + 3.2 + 0.5 * i, CAV_Y1], color=GREY, ls=":", lw=1)
 for xc, w in ((mxc, WIN_W), (gxc, WIN_W)):
     ax.add_patch(Rectangle((xc - w / 2, 0), w, WALL, fc="white", ec=RED, ls="--"))
-ax.text(mxc, my0 + MW / 2 + 1.5, "GY-219", ha="center", fontsize=FS_N)
+ax.text(mxc, my0 + MW / 2 + 1.0, "GY-219", ha="center", fontsize=FS_N)
 ax.text(gxc, gy0 + GD + 1.4, "GND (cuna)", ha="center", fontsize=FS_N, color=GRN, fontweight="bold")
 ax.text(mxc, -2.0, "VIN+ VIN−", ha="center", va="top", fontsize=FS_N, color=BLUE, fontweight="bold")
 dim(ax, 0, -5.8, OUT_W, -5.8, f"{OUT_W:.1f}", (0, -1.4))
@@ -286,12 +294,13 @@ ax.add_patch(Rectangle((OUT_D - POCK_D, POCK_Z0), POCK_D, POCK_H, fc="white", ec
 ax.add_patch(Rectangle((OUT_D - BACK, ROW_ZC - ROW_H / 2), BACK, ROW_H, fc="white", ec=GREY, ls="--"))
 ax.add_patch(Rectangle((SCREW_Y - 2.0, BODY_H - 5), 4.0, 5, fc="#e9c46a", ec="k"))
 ax.add_patch(Rectangle((my0, FLOOR), TB_D, POST_H, fc=BODY_C, ec=RED, hatch="///"))
-ax.add_patch(Rectangle((my0 + MW / 2 + HY / 2 - 2.6, FLOOR), 5.2, POST_H, fc=BODY_C, ec=RED))
+ax.add_patch(Rectangle((my0 + MW - SUP_Y - SUP_W / 2, FLOOR), SUP_W, POST_H, fc=BODY_C, ec=RED))
 ax.add_patch(Rectangle((my0, z_pcb), MW, PCB_T, fc="#c9a7e6", ec="k"))
 ax.add_patch(Rectangle((my0, z_pcb + PCB_T), TB_D, TB_H, fc="#4da3e0", ec="k"))
 dim(ax, 0, -2.2, OUT_D, -2.2, f"{OUT_D:.1f}", (0, -1.3))
 dim(ax, OUT_D + 2.2, 0, OUT_D + 2.2, BODY_H, f"{BODY_H:.1f}", (2.2, 0))
 ax.text(my0 + TB_D / 2, FLOOR + POST_H / 2, "costilla", ha="center", va="center", fontsize=9)
+ax.text(my0 + MW - SUP_Y, FLOOR - 1.2, "apoyo", ha="center", va="top", fontsize=9)
 ax.text(OUT_D - BACK / 2, BODY_H + 1.2, "inserto M3", ha="center", fontsize=FS_N)
 finish(ax, (-3, OUT_D + 7), (-5, BODY_H + 3))
 
@@ -327,7 +336,7 @@ ax.plot([-1, OUT_W + 1], [HOLE_ZC, HOLE_ZC], color=GREY, ls=(0, (8, 3, 2, 3)), l
 for xc in (mxc, gxc):
     rr(ax, xc - WIN_W / 2, HOLE_ZC - WIN_H / 2, WIN_W, WIN_H, WIN_R, fc="white", ec="k", lw=1.4)
 for sx in (-1, 1):
-    ax.add_patch(Rectangle((mxc + sx * TB_P / 2 - 1.5, HOLE_ZC - 1.75), 3.0, 3.5, fc="none", ec=BLUE, ls="--"))
+    ax.add_patch(Rectangle((mxc + sx * TB_P / 2 - 2.0, HOLE_ZC - 2.5), 4.0, 5.0, fc="none", ec=BLUE, ls="--"))
     ax.add_patch(Rectangle((gxc + sx * GP / 2 - 2.0, HOLE_ZC - 2.5), 4.0, 5.0, fc="none", ec=GRN, ls="--"))
 ax.text(mxc, HOLE_ZC + WIN_H / 2 + 0.6, "VIN+  VIN−", ha="center", va="bottom", fontsize=FS_N, color=BLUE, fontweight="bold")
 ax.text(gxc, HOLE_ZC + WIN_H / 2 + 0.6, "GND  GND", ha="center", va="bottom", fontsize=FS_N, color=GRN, fontweight="bold")
@@ -388,9 +397,9 @@ draw3d(a07, [tris(B, CB), tris(M, CM, (0, 0, 14)), tris(G, CG, (0, 0, 14)), tris
              tris(C, CC, (0, 26, 0))], zoom=1.15)
 
 # ---- notas y cuadro de datos
-fig.suptitle("Cápsula INA219 · boceto 12 · 2026-11-25 · medidas aproximadas en mm", fontsize=16, fontweight="bold", y=0.985)
+fig.suptitle("Cápsula INA219 · boceto 15 · 2026-11-25 · mm (módulo medido; caja aprox.)", fontsize=16, fontweight="bold", y=0.985)
 fig.text(0.03, 0.02,
-         "Notas:  1) Módulo sin medir.   2) Esquinas R8; orillas de base y tapa en gota r3.5.   "
+         "Notas:  1) GY-219 medido; postes con inserto M2.5×4×3.5 y M2.5 avellanado.   2) Esquinas R8; orillas de base y tapa en gota r3.5.   "
          "3) Machos en la cápsula, hembras en el cable (D-46).   4) Labio sin tramo al frente.   5) Pines de la bornera GND cortados a 2.",
          fontsize=FS_N + 1)
 fig.savefig(OUT, dpi=100)

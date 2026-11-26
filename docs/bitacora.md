@@ -482,6 +482,42 @@ Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
 5. Contar los insertos M2.5 de C22.
 6. Decidir inserto o autorroscante en los postes del módulo (pregunta abierta).
 
+### 2026-11-25 (2) — GY-219 medido y modelo CadQuery de la cápsula (checkpoint 1)
+
+**Objetivo:** cerrar las medidas del INA219 y arrancar el modelo de la cápsula.
+
+**Qué se hizo:**
+- Carlos midió el GY-219 sobre `medidas_gy219_1.png`: placa A 20.9 × B 20.3 × H 1.5; 2 barrenos Ø2.9, ambos del lado de la bornera (orilla → orilla del hueco: D1 1.1, D2 1.0, E 2.5); bornera G1 = G2 = 5.3 (largo 9.7, centrada), F 10, J 10, K 1.0 (cara de la placa → orilla de abajo del hueco), L 1.5. Shunt R100 (0.1 Ω). Soldaduras de la bornera a 4.0–4.8 de la orilla, vistas por abajo (`medidas_pines_bornera_ina_1.png`).
+- Dupont medidos: macho con carcasa de 14 × 2.5 y pin de 5.7; hembra de 12 × 2.5.
+- Cupón OpenLOCK: los 2 bolsillos retienen bien; se queda el de 2 puntos (3.8).
+- Inventario: los M2.5 están en la C24, no en la C14 ni en la C16. Ajuste de TOR-M2.5x6-negro de 12 a 20 (conteo físico). Insertos INS-M2.5x4x3.5: 5 en la C22, igual que el inventario.
+- Láminas `boceto_capsula_13` → `_15` con el módulo medido; `parameters.py` con la sección CÁPSULA (`CAP_*`, `INA_*`, `GND_*`) y los Dupont (`DUP_*`).
+- `cad/capsula.py` (cuerpo, tapa y envolventes) y `cad/test_capsula.py` (8 tests). Checkpoint 1 exportado: `capsula_cuerpo_2`, `capsula_tapa_2`, `capsula_ensamble_2` (42.85 × 43.1 × 21.6). Suite completa: 74 tests pasan.
+- CQX (temp-th): completados el marcado del shunt, la medida del GY-219, el largo de la hembra Dupont, el conteo de insertos M2.5 y la decisión inserto/autorroscante.
+
+**Decisiones:**
+- **D-58 — Fijación del GY-219:** 2 postes Ø6 en los barrenos (ambos junto a la bornera), costilla bajo la bornera con ranura de 3.0–5.8 para sus pines y apoyo de 1.6 a 5 de la orilla del header. Alternativas: postes en diagonal (el módulo no tiene 4 barrenos); M3 (no pasa por Ø2.9). Razón: 2 tornillos bloquean el giro y el apoyo evita que el lado del header quede volado.
+- **D-59 — Esquinas interiores R2.0** (antes R_OUT − WALL = 5.6); por fuera se queda R8. Razón: el módulo queda ~1 mm más pegado al frente (Carlos).
+- **D-60 — Postes de 3.5 con inserto INS-M2.5x4x3.5 (barreno de 4.5, deja 1 de piso) y TOR-M2.5x6-negro avellanado** (5.7 de largo total, cabeza Ø3.8). Alternativas: autorroscante; poste de 2.0 (no alcanza para el inserto). Razón: lo que Carlos tiene. La cabeza cónica se apoya en la orilla del barreno sin avellanar (no apretar de más) y deja ~3.75 de rosca. La cápsula sube 1.5.
+- **D-61 — Bolsillo OpenLOCK del lado del cable de 3.8** (cupón de 2 puntos). Razón: los 2 retuvieron bien; el de 3.8 aprieta menos.
+- **D-62 — Bloque de atrás de 14.0** (antes 12.8). Alternativa: dejar que el macho sobresalga 1.2 dentro de la cavidad. Razón: el macho Dupont de 14 queda completo adentro (Carlos); la cápsula crece 1.2.
+
+**Superadas:** de D-52, la cápsula de 52.3 × 44.1 × 19.7, las ventanas a 8.6 y a 18.8 entre sí, los postes de 2.0 y la cuna de 3.2 (ahora: ventanas a 10.5 y 16.15 entre sí, cuna de 5.08). De D-53, la ranura de 8.0 × 4.5 (ahora las 2 son de 9.5 × 4.5, porque la bornera del módulo tiene paso 5). De D-47, el rango de 3.6–3.8 (ahora 3.8).
+
+**Problemas y solución:**
+- La fórmula de la lámina (0.293 · r − CL) dejaba la esquina de la placa tocando el radio interior. Se cambió a `CAP_CLX = r − (r − CL)/√2` = 0.80; la cápsula quedó 0.4 más ancha que la lámina 15.
+- OCC no redondea r3.5 en una tapa de 3.5: la tapa queda en gota r3.45.
+- El plano "XZ" de CadQuery tiene la normal en −Y; las ventanas se cortaban hacia afuera. Se corrigió.
+- La gota se arma como redondeo ∪ (chaflán ∩ franja de 1.03).
+
+**Parámetros definidos:** `CAP_*`, `INA_*` (`INA_TB_PIN_SLOT = (3.0, 5.8)`, `INA_POST_H = 3.5`, `INA_POST_D = 6.0`, `INA_INS_DEPTH = 4.5`), `GND_*`, `CAP_BACK = 14.0`, `CAP_IN_R = 2.0`, `OL_CABLE_POCK_H = 3.8`, `DUP_W = 2.5`, `DUP_M_L = 14.0`, `DUP_M_PIN = 5.7`, `DUP_F_L = 12.0`, `DUP_F_SLOT_DEPTH = 11.9`.
+
+**Archivos:** `cad/capsula.py`, `cad/test_capsula.py` (nuevos); `cad/parameters.py`, `cad/bocetos/lamina_capsula.py`, `cad/bocetos/lamina_conector.py` (bolsillo de 3.8, sin regenerar); en `output/` (fuera de git): `medidas_gy219_1`, `medidas_pines_bornera_ina_1`, `boceto_capsula_13`/`_14`/`_15` (`_11`, `_12` y `_13` pasaron a `historico/`), `capsula_cuerpo_1`/`_2`, `capsula_tapa_1`/`_2`, `capsula_ensamble_1`/`_2`.
+
+**Pendientes (Carlos):**
+1. Revisar `capsula_ensamble_2` en Onshape (checkpoint 1: cuerpo y posiciones).
+2. Después: checkpoint 2, la cara de atrás (bolsillo OpenLOCK de 4.2, ranura de los 4 machos al ras y pin/hueco Ø3).
+
 ---
 
 ## 4. Lecciones aprendidas

@@ -10,7 +10,7 @@ Punto de entrada para Claude Code. Aquí vive solo el **estado vigente** del pro
 
 Diseñar en CadQuery e imprimir en FDM una **carcasa para un monitor ambiental** (ESP8266 Wemos D1 mini + ESPHome) montada en una **pared HSW (honeycomb storage wall)**, más una **cápsula aparte para el sensor remoto**. El frente muestra un LCD 16×2 (+ botón de backlight) con temperatura y humedad de dos puntos: **ambiente** (BME280 en la carcasa, aislado del calor de la electrónica) y **caja de filamentos** (BME280 remoto por cable CAT6). El circuito ya está validado en protoboard; este proyecto es sobre todo el diseño mecánico.
 
-**Estado (2026-11-25):** **carcasa terminada** y colgada en la pared HSW desde el 2026-10-19 (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, PETG rojo, 96 × 60); humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35); firmware v2. Siguiente: **cápsula con INA219** (≈ 52.3 × 44.1 × 19.7) y **conector del CAT6** (≈ 29 × 36 × 19.7) con clip OpenLOCK (D-41 a D-57). Láminas 2D listas con medidas aproximadas; cupón OpenLOCK impreso; faltan medidas reales. Ver "Estado actual y próximos pasos".
+**Estado (2026-11-25):** **carcasa terminada** y colgada en la pared HSW desde el 2026-10-19 (`caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, PETG rojo, 96 × 60); humedad igual que otros medidores, temperatura ~1 °C distinta, sin offset (D-35); firmware v2. Siguiente: **cápsula con INA219** y **conector del CAT6** (≈ 29 × 36 × 19.7) con clip OpenLOCK (D-41 a D-62). GY-219 medido; cápsula en CadQuery, **checkpoint 1** (`capsula_ensamble_2`, 42.85 × 43.1 × 21.6) por revisar en Onshape. Ver "Estado actual y próximos pasos".
 
 ## Entorno y restricciones duras
 
@@ -52,8 +52,8 @@ Detalle y razones en `docs/superpowers/specs/2026-09-25-carcasa-monitor-design.m
 - **Rejillas (D-23, D-30):** hexagonales de 3.5. Frente: zona bajo la ventana con 3 mm de margen + columna en zigzag de 5 por lado + 5 arriba de la pantalla + 3 arriba del botón (47 en total; simétrica). Caja delantera también en sus paredes inferior y superior; caja trasera en sus paredes inferior y superior (chimenea).
 - **Paso de cables de la divisoria** (botón y BME): 8 × 14, a la izquierda de la placa, abajo (1.5 del piso; D-32).
 - **Puerto del CAT6 (D-01, D-31, D-41):** I2C directo por CAT6 (1–1.5 m), SDA y SCL en pares distintos. Sale por una **muesca en la pared superior de la caja trasera**, al centro, abierta hacia la tapa; alivio con un cincho por dentro. En la placa: conector de 90° delgado sobre 6 pines al centro de la orilla opuesta al USB (**no está soldado**). Puerto I2C genérico **GND / 3V3 / SDA / SCL** (orden Qwiic).
-- **Conector de 2 partes (D-46, D-47, D-49, D-54 a D-56):** **machos en la cápsula, hembras en la pieza del cable**. 4 Dupont sencillos con 2 vueltas de cinta en una ranura de ≈ 11.0 × 3.4 con tope atrás, **al ras de la cara** (fondo = largo de la hembra − 0.1). Pin Ø3 × 7 (base r0.8) y hueco cruzados. **Clip OpenLOCK** abajo de los pines, sin pegamento: el bolsillo del lado del cable es más bajo (3.6–3.8, según el cupón) que el nominal de 4.2 de la cápsula. Pieza del cable de ≈ 29 × 36 × 19.7: CAT6 soldado a las hembras con termofil y sujeto por una **prensa de 3 costillas** (canal en U de 5.0, 2 costillas en el cuerpo y 1 en la tapa); tapa con labio y 2 M3 en diagonal. El largo se revisa con las piezas reales.
-- **Cápsula del INA (D-42, D-44, D-45, D-48, D-50 a D-53, D-57):** INA219 **GY-219** (shunt en el lado alto; 0x40) con el **header desoldado** y cables soldados directo (GND con 2 cables; VIN± del header sin cable). IN+/OUT+ en la bornera del módulo y GND en la bornera de 2 polos puenteada, en una **cuna de 3.2** con los pines cortados a 2. **Frente simétrico:** 2 ventanas de 9.5 × 6.5 r1 a 8.6 de la base y 18.8 entre sí. Postes del módulo de 2.0 en diagonal, costilla bajo su bornera; cable GND por la pared derecha. ≈ **52.3 × 44.1 × 19.7**, esquinas R8, gota r3.5 abajo y arriba. **Tapa de 3.5** con labio (1.2 × 2.0, entrada 0.8 × 45°, sin tramo al frente), 2 lengüetas al frente, 2 M3×8 avellanados atrás (insertos M3×4×4.2) y 2 ranuras ovaladas de 8.0 × 4.5 y 9.5 × 4.5 sobre los tornillos de las borneras. Sin ventilación (0.1 W a 1 A).
+- **Conector de 2 partes (D-46, D-47, D-49, D-54 a D-56):** **machos en la cápsula, hembras en la pieza del cable**. 4 Dupont sencillos con 2 vueltas de cinta en una ranura de ≈ 11.0 × 3.4 con tope atrás, **al ras de la cara** (fondo = largo de la hembra − 0.1). Pin Ø3 × 7 (base r0.8) y hueco cruzados. **Clip OpenLOCK** abajo de los pines, sin pegamento: el bolsillo del lado del cable es más bajo (**3.8**, cupón de 2 puntos, D-61) que el nominal de 4.2 de la cápsula. Dupont: macho de 14 × 2.5 con pin de 5.7 (completo dentro del bloque de 14 de la cápsula, D-62); hembra de 12. Pieza del cable de ≈ 29 × 36 × 19.7: CAT6 soldado a las hembras con termofil y sujeto por una **prensa de 3 costillas** (canal en U de 5.0, 2 costillas en el cuerpo y 1 en la tapa); tapa con labio y 2 M3 en diagonal. El largo se revisa con las piezas reales.
+- **Cápsula del INA (D-42, D-44, D-45, D-48, D-50 a D-53, D-57):** INA219 **GY-219** (shunt en el lado alto; 0x40) con el **header desoldado** y cables soldados directo (GND con 2 cables; VIN± del header sin cable). IN+/OUT+ en la bornera del módulo y GND en la bornera de 2 polos puenteada, en una cuna (5.08) con los pines cortados a 2. **Frente simétrico:** 2 ventanas de 9.5 × 6.5 r1 a **10.5** de la base y 16.15 entre sí. Módulo (20.3 × 20.9 × 1.5, 2 barrenos Ø2.9 junto a la bornera) en **2 postes Ø6 × 3.5** con inserto M2.5×4×3.5 y M2.5×6 avellanado, costilla bajo su bornera con ranura para los pines y apoyo bajo el header (D-58, D-60); cable GND por la pared derecha. **42.85 × 43.1 × 21.6**, esquinas R8 por fuera y **R2 por dentro** (D-59), gota r3.5 abajo y r3.45 arriba; bloque de atrás de 14. **Tapa de 3.5** con labio (1.2 × 2.0, entrada 0.8 × 45°, sin tramo al frente), 2 lengüetas al frente, 2 M3×8 avellanados atrás (insertos M3×4×4.2) y 2 ranuras ovaladas de 9.5 × 4.5 sobre los tornillos de las borneras. Sin ventilación (0.1 W a 1 A).
 - **Electrónica:** sensores SDA D1 / SCL D2 (así quedó soldada la placa; la guía de fase 2 dice al revés), LCD D6/D5 (bus aparte, 0x27), botón D7 a GND. **0x76 = ambiente**, **0x77 = filamentos**. Backlight: se enciende con el botón o al arrancar y se apaga sola a los 30 s.
 
 ## Especificaciones y parámetros
@@ -72,7 +72,7 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - Impresión: `BED_CHAMFER=0.4` (no se aplica al conector)
 - OpenLOCK (rompecabezas): `OL2_MOUTH_W=14.0`, `OL2_CHAMBER_W=13.6`, `OL2_TOTAL_DEPTH=10.8`, `OL2_BLIND_THICK=4.2`, `OL_CLIP_T=3.5`; cupón `OL_COUPON_TIGHT=(3.8, 3.6)`, `OL_COUPON_DOTS=(2, 4)`; marcas `MARK_DOT_D=1.5`, `MARK_DOT_PITCH=2.0`, `MARK_DOT_DEPTH=0.6`
 - Bornera de 2 polos (medida): `BORNE2_L=10.0`, `BORNE2_D=7.85`, `BORNE2_H=10.0`, `BORNE2_PITCH=5.0`, pin 0.65 × 1.0 × 4.29, `BORNE2_PIN_Y=3.65`, hueco 4 × 5 a `BORNE2_HOLE_Z0=0.92`
-- Cápsula y conector: valores de las láminas en `cad/bocetos/` (aproximados; pasan a `parameters.py` al modelar)
+- Cápsula (sección CÁPSULA; X = 0 al centro, Y = 0 en la cara de las ventanas): `CAP_*` (`CAP_IN_R=2.0`, `CAP_BACK=14.0`, `CAP_CLX=0.80`), `INA_*` (GY-219 medido; `INA_POST_H=3.5`, `INA_POST_D=6.0`, `INA_TB_PIN_SLOT=(3.0, 5.8)`), `GND_*`; Dupont `DUP_W=2.5`, `DUP_M_L=14.0`, `DUP_M_PIN=5.7`, `DUP_F_L=12.0`; `OL_CABLE_POCK_H=3.8`. Conector: valores de su lámina en `cad/bocetos/`
 
 ## Decisiones vigentes clave
 
@@ -117,12 +117,17 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 | Dupont sencillos con cinta, al ras de la cara; machos en la cápsula | Si salen, las caras no cierran y el clip no engancha | D-49 |
 | Tapa de la cápsula: labio con chaflán + 2 lengüetas + 2 M3 atrás | Autoalinea sin piezas flexibles ni tornillería de más | D-50 |
 | Esquinas R8 / R6 y orillas en gota r3.5 | Se ve redondo y se imprime sin voladizo | D-51 |
-| Frente simétrico: ventanas en espejo a la misma altura; cápsula de 52.3 | Libra la esquina R8 y la gota; estética (Carlos) | D-52 |
+| Frente simétrico: ventanas en espejo a la misma altura (medidas superadas por D-58 a D-62) | Libra la esquina R8 y la gota; estética (Carlos) | D-52 |
 | Tapa con 2 ranuras ovaladas sobre los tornillos de las borneras | Fácil meter el desarmador; sin paredes de 0.3 | D-53 |
 | Prensa de 3 costillas para el CAT6 en vez del cincho | Menos espacio y sin piezas; la S no cabe (radio ~22) | D-54 |
 | Pin Ø3 × 7 con base r0.8 | > 6 para impedir conectar volteado | D-55 |
 | Pieza del cable de 29 × 36 × 19.7, 2 M3 en diagonal | Mismo estilo que la cápsula; largo por revisar | D-56 |
 | Cápsula sin ventilación | El shunt disipa 0.1 W a 1 A | D-57 |
+| GY-219 en 2 postes junto a la bornera + costilla con ranura + apoyo bajo el header | Solo tiene 2 barrenos Ø2.9 (M2.5), ambos de ese lado | D-58 |
+| Esquinas interiores de la cápsula R2 | Módulo más pegado al frente (Carlos) | D-59 |
+| Postes de 3.5 con inserto M2.5×4×3.5 y M2.5×6 avellanado | Lo que hay; el poste de 2.0 no alcanzaba | D-60 |
+| Bolsillo del lado del cable de 3.8 | Los 2 del cupón retienen; el de 3.8 aprieta menos | D-61 |
+| Bloque de atrás de la cápsula de 14 | El macho Dupont de 14 queda completo adentro | D-62 |
 
 ## Estructura de carpeta y archivos clave
 
@@ -133,11 +138,12 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - `cad/tapa_trasera.py`, `cad/caja_trasera.py`, `cad/caja_delantera.py` — las 3 piezas (`build_global()` / `build_print()`)
 - `cad/boton.py` — alojamiento del botón (variantes de sujeción; vigente: clip)
 - `cad/ensamble.py` — ensamble STEP de revisión (piezas en gris, envolventes en naranja)
+- `cad/capsula.py` — cápsula del INA (`build_body()`, `build_lid()`, `build_lid_print()`, ensamble con envolventes); checkpoint 1, falta la cara del conector
 - `cad/prueba_frente.py`, `cad/prueba_boton.py`, `cad/tapa_trasera_prueba.py`, `cad/cupon_openlock.py` — piezas de prueba (el cupón: bloques N y T de retención del clip)
 - `cad/bocetos/lamina_capsula.py` (vistas 01–08) y `lamina_conector.py` (vistas 11–17; usa los parámetros y el 3D de la cápsula) — láminas técnicas PNG con medidas aproximadas; el primer argumento es la ruta de salida
 - `cad/cq_utils.py` (export versionado STL+STEP y de ensambles; el numeral también cuenta `output/historico/`), `cad/stl_ref.py` (lector de STL con numpy)
-- `cad/test_*.py` — 66 tests (2 se saltan si falta el STL del conector, que no se publica); correr con `cd cad && python3 -m pytest -q`
-- `output/` — exportaciones versionadas (`_1`, `_2`...); **solo la versión actual y la anterior**, lo viejo en `output/historico/`. Vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `cupon_openlock_N_1` / `_T_1`, `boceto_capsula_12.png`, `boceto_conector_4.png`, `caja_frontal_2.png`, `medidas_bornera_2p_4.png`, `perfil_orilla_1.png`, `ina219_estimado_1.png`, `frente_hexagonos_3.png`, `insertos_caja_*_1.png`.
+- `cad/test_*.py` — 74 tests (2 se saltan si falta el STL del conector, que no se publica); correr con `cd cad && python3 -m pytest -q`
+- `output/` — exportaciones versionadas (`_1`, `_2`...); **solo la versión actual y la anterior**, lo viejo en `output/historico/`. Vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `cupon_openlock_N_1` / `_T_1`, `capsula_cuerpo_2`, `capsula_tapa_2`, `capsula_ensamble_2`, `boceto_capsula_15.png`, `boceto_conector_4.png`, `medidas_gy219_1.png`, `medidas_pines_bornera_ina_1.png`, `caja_frontal_2.png`, `medidas_bornera_2p_4.png`, `perfil_orilla_1.png`, `ina219_estimado_1.png`, `frente_hexagonos_3.png`, `insertos_caja_*_1.png`.
 - `esphome/bmetesting_2.yaml` — firmware ESPHome vigente (versión 2: hora en la 2a fila; `bmetesting_1.yaml` queda como histórico)
 - `LICENSE` — MIT, con excepción para el conector HSW
 - `README.md` — presentación del repo: estado, carcasa, electrónica, BOM, resumen y lecciones
@@ -173,14 +179,10 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 ## Estado actual y próximos pasos
 
 - **Carcasa terminada y montada en la pared** (2026-10-19). No se imprimen más versiones (D-37). Sin pendientes de la carcasa.
-- **Cápsula del INA219 y conector del CAT6:** láminas 2D listas (`boceto_capsula_12`, `boceto_conector_4`); cupón OpenLOCK impreso. Faltan datos de Carlos (pendientes en CQX, proyecto `temp-th`):
-  1. Medidas reales del GY-219: placa, Ø y separación de barrenos (decide M3 o M2.5) y altura del centro del hueco de su bornera sobre la placa (fija la altura común de las ventanas, hoy 8.6).
-  2. Marcado del shunt (R100 = 0.1 Ω).
-  3. Largo de la carcasa de la hembra Dupont (fondo de la ranura).
-  4. Resultado del cupón OpenLOCK (alto del bolsillo del lado del cable: 3.8 o 3.6).
-  5. Contar los insertos M2.5 de C22.
-  6. Inserto o autorroscante en los postes del módulo.
-- Después: actualizar las láminas con las medidas reales → modelo CadQuery de la cápsula y del conector (parámetros a `parameters.py`) → `esphome/bmetesting_3.yaml`.
+- **Cápsula del INA219:** todos los datos medidos (GY-219, Dupont, cupón, tornillería). Modelo `cad/capsula.py`, checkpoint 1 (cuerpo, tapa y posiciones) en `capsula_ensamble_2`:
+  1. Carlos revisa el checkpoint 1 en Onshape.
+  2. Checkpoint 2: cara de atrás (bolsillo OpenLOCK de 4.2, ranura de los 4 machos al ras, pin/hueco Ø3 cruzados).
+- Después: lámina y modelo del conector del CAT6 (bolsillo de 3.8, ranura de hembras de 11.9) → `esphome/bmetesting_3.yaml`.
 
 ## Historial
 

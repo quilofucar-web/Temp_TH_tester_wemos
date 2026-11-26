@@ -332,6 +332,7 @@ OL_CLIP_T = 3.5
 OL_COUPON_WALL = 2.0
 OL_COUPON_TIGHT = (3.8, 3.6)     # alto de los bolsillos apretados
 OL_COUPON_DOTS = (2, 4)          # puntos grabados de cada uno
+OL_CABLE_POCK_H = 3.8            # elegido (2026-11-25): los 2 retuvieron bien; se queda el de 2 puntos
 MARK_DOT_D = 1.5                 # marcas de variante (extras.md: >= 0.6 de profundidad)
 MARK_DOT_PITCH = 2.0
 MARK_DOT_DEPTH = 0.6
@@ -352,3 +353,90 @@ BORNE2_PIN_Y = 3.65      # cara del cable -> centro del pin (G1 3.14 / G2 4.15; 
 BORNE2_HOLE_W = 4.0      # hueco del cable
 BORNE2_HOLE_H = 5.0
 BORNE2_HOLE_Z0 = 0.92    # base -> orilla de abajo del hueco (E1; E2 = 6.60 dificil de medir)
+
+# ----------------------------------------------------------------------
+# CAPSULA DEL INA219 (D-42 a D-57). Valores de boceto_capsula_15.
+# Coordenadas propias: X = 0 al centro (+X a la derecha visto de frente),
+# Y = 0 en la cara de las ventanas (+Y hacia la cara del conector),
+# Z = 0 en la base.
+# ----------------------------------------------------------------------
+CAP_WALL = 2.4
+CAP_FLOOR = 2.0
+CAP_LID_T = 3.5
+CAP_CL = 0.3                     # holgura modulo/bornera -> pared
+CAP_R = 8.0                      # esquinas verticales por fuera
+CAP_IN_R = 2.0                   # esquinas por dentro (el modulo queda pegado al frente)
+CAP_GOTA_R = 3.5                 # orilla en gota: arco r3.5 + 45 grados (D-51)
+CAP_GOTA_T = CAP_GOTA_R * (1 - 0.5 ** 0.5)     # 1.03: altura del punto a 45 grados
+CAP_GOTA_IN = 2 * CAP_GOTA_T                    # 2.05: entrada de la gota en la cama
+CAP_CLX = max(CAP_CL, CAP_IN_R - (CAP_IN_R - CAP_CL) / 2 ** 0.5)   # 0.80: la esquina de la placa libra el radio interior por CAP_CL
+# GY-219 medido por Carlos (2026-11-25); la bornera mira al frente.
+# Ejes en la capsula: ML a lo largo de X (lado de la bornera, B), MW en Y (A).
+INA_ML = 20.3
+INA_MW = 20.9
+INA_PCB_T = 1.5
+INA_HOLE_D = 2.9                 # 2 barrenos, ambos del lado de la bornera (M2.5)
+INA_HOLE_X = (1.0 + INA_HOLE_D / 2, INA_ML - (1.1 + INA_HOLE_D / 2))   # D2 / D1 desde la orilla izq.
+INA_HOLE_Y = 2.5 + INA_HOLE_D / 2           # E: orilla de la bornera -> centro
+INA_TB_L = 9.7                   # bornera del modulo: largo (G1 = G2 = 5.3, centrada)
+INA_TB_D = 10.0                  # F
+INA_TB_H = 10.0                  # J
+INA_TB_PITCH = 5.0               # como la bornera de 2 polos
+INA_TB_HOLE_Z0 = 1.0             # K: cara de la placa -> orilla de abajo del hueco
+INA_TB_HOLE_H = 5.0
+INA_TB_PIN = 1.5                 # L: pines bajo la placa
+INA_TB_PIN_SLOT = (3.0, 5.8)     # ranura de la costilla: soldaduras a 4.0-4.8 de la orilla (Carlos, aprox.) + 1 por lado
+INA_HDR_Y = 1.8                  # fila del header (desoldado): orilla de atras -> centro (aprox.)
+INA_POST_H = 3.5                 # inserto M2.5x4x3.5 + M2.5x6 avellanado (5.7 total, cabeza 3.8)
+INA_POST_D = 6.0
+INA_INS_DEPTH = 4.5              # barreno del inserto: deja 1 de piso
+INA_SUP_W = 1.6                  # apoyo bajo el lado del header
+INA_SUP_Y = 5.0                  # orilla de atras -> centro del apoyo
+CAP_GAP = 1.0                    # modulo -> bornera GND
+CAP_WIRE_GAP = 5.0               # detras del modulo: el cable GND va por la pared derecha
+CAP_CUNA_WALL = 1.0              # cuna de la bornera GND (pines cortados a 2)
+CAP_G_PIN_CUT = 2.0
+CAP_WIN_W = 9.5                  # ventanas del frente (simetricas, D-52)
+CAP_WIN_H = 6.5
+CAP_WIN_R = 1.0
+CAP_BACK = 14.0                  # bloque macizo de atras: cabe completo el macho Dupont de 14 (Carlos)
+CAP_LIP_W = 1.2                  # labio de la tapa (D-50)
+CAP_LIP_H = 2.0
+CAP_LIP_C = 0.8                  # entrada a 45 grados
+CAP_LIP_CL = 0.2
+CAP_TAB_W = 4.0                  # lenguetas del frente
+CAP_TAB_T = 1.8
+CAP_TAB_H = 3.2
+CAP_SLOT_L = 9.5                 # ranuras ovaladas sobre los tornillos de las borneras (D-53)
+CAP_SLOT_W = 4.5
+CAP_SCREW_EDGE = 6.5             # M3 de la tapa: orilla -> centro (avellanado a >= 3 de la orilla)
+CAP_INS_M3_DEPTH = 5.5
+
+# Derivados
+_CAP_HALF_MOD = CAP_WALL + CAP_CLX + INA_ML / 2                    # orilla -> centro del modulo
+_CAP_HALF_GND = CAP_WALL + CAP_CLX + INA_ML + CAP_GAP + BORNE2_L / 2
+CAP_W = _CAP_HALF_MOD + _CAP_HALF_GND                              # ventanas en espejo
+CAP_IN_W = CAP_W - 2 * CAP_WALL
+CAP_IN_D = CAP_CLX + INA_MW + CAP_WIRE_GAP
+CAP_D = CAP_WALL + CAP_IN_D + CAP_BACK
+CAP_CAV_Y1 = CAP_WALL + CAP_IN_D
+INA_X0 = -CAP_W / 2 + CAP_WALL + CAP_CLX                           # orilla izq. del modulo
+INA_Y0 = CAP_WALL + CAP_CLX                                        # orilla de la bornera
+INA_XC = INA_X0 + INA_ML / 2
+INA_Z0 = CAP_FLOOR + INA_POST_H                                    # cara de abajo de la placa
+CAP_HOLE_ZC = INA_Z0 + INA_PCB_T + INA_TB_HOLE_Z0 + INA_TB_HOLE_H / 2   # 10.5: huecos de cable
+GND_XC = -INA_XC
+GND_Y0 = INA_Y0
+GND_Z0 = CAP_HOLE_ZC - (BORNE2_HOLE_Z0 + BORNE2_HOLE_H / 2)        # base de la bornera GND
+CAP_IN_H = max(INA_POST_H + INA_PCB_T + INA_TB_H, GND_Z0 - CAP_FLOOR + BORNE2_H) + 1.0
+CAP_BODY_H = CAP_FLOOR + CAP_IN_H
+CAP_H = CAP_BODY_H + CAP_LID_T
+CAP_SCREW_X = CAP_W / 2 - CAP_SCREW_EDGE
+CAP_SCREW_Y = CAP_D - CAP_BACK / 2
+
+# Dupont medidos por Carlos (2026-11-25), conector de 2 partes (D-46, D-49)
+DUP_W = 2.5                      # carcasa cuadrada (macho y hembra)
+DUP_M_L = 14.0                   # carcasa del macho (capsula)
+DUP_M_PIN = 5.7                  # pin metalico del macho, fuera de la carcasa
+DUP_F_L = 12.0                   # carcasa de la hembra (pieza del cable)
+DUP_F_SLOT_DEPTH = DUP_F_L - 0.1  # fondo de la ranura de las hembras (D-49)
