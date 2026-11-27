@@ -518,6 +518,76 @@ Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
 1. Revisar `capsula_ensamble_2` en Onshape (checkpoint 1: cuerpo y posiciones).
 2. Después: checkpoint 2, la cara de atrás (bolsillo OpenLOCK de 4.2, ranura de los 4 machos al ras y pin/hueco Ø3).
 
+### 2026-11-27 — Cápsula completa (checkpoint 1 y 2), conector del CAT6 en CadQuery y firmware v3
+
+**Objetivo:** cerrar las dudas del checkpoint 1 de la cápsula, modelar la cara del conector (checkpoint 2) y la pieza del cable, y preparar el firmware v3.
+
+**Qué se hizo:**
+- Checkpoint 1 revisado por Carlos en Onshape: faltaban la fijación de la bornera GND y la ruta de su cable. Se resolvieron en 3 vueltas (`capsula_*_3` a `_5`).
+- Checkpoint 2: cara de atrás de la cápsula (`capsula_*_6`); luego, avellanado en el hueco del pin (`capsula_*_7`).
+- Conector del CAT6 modelado en `cad/conector.py` (`conector_*_1` a `_4`), en coordenadas de la cápsula y probado acoplado contra ella sin interferencias.
+- Firmware `esphome/bmetesting_3.yaml`: Carlos lo validó en HA y lo cargó por OTA. El log salió como se esperaba: 0x76 y 0x27 responden; 0x77 y el INA219 quedan FAILED porque no hay nada en el puerto.
+- Carlos mandó a imprimir la cápsula [dato faltante: versión impresa; se le avisó que la vigente es `capsula_cuerpo_7` / `capsula_tapa_7`].
+- Inventario: −19 g del FIL-0014 (PETG+ negro verde; 17 g laminados + 10 %), proyecto temp-th; quedan 105 g (commit `b78aa06` en el repo del inventario).
+- 92 tests (antes 74): 13 de la cápsula y 13 del conector.
+
+**Decisiones:**
+- **D-63 — Bornera GND fijada entre la cuna y un bloque de la tapa:** la cuna es una **U** abierta del lado del cable. La tapa lleva un bloque casi sólido que baja 2.5 alrededor de la bornera, con paredes de 3.0 a la izquierda y atrás; a la derecha llega hasta el labio. Holgura de 0.2 a los lados y **0.1 arriba**. Al frente la detiene la pared de las ventanas. Solo le queda la ranura del desarmador. Alternativas: collar de 1.0 (Carlos: muy delgado); holgura de 0.2 arriba. Razón: antes la bornera solo estaba apoyada; al meter un cable se empuja hacia atrás y al apretar el tornillo gira.
+- **D-64 — Cable GND libre por el piso junto a la pared derecha, cuna hueca hasta el piso (5.08):** entra a la cuna por el lado abierto de la U; adentro caben la soldadura y el puente entre los 2 pines. Alternativa: muesca de 3.0 en la pared de la cuna y canal de 2.5 con costilla baja de 1 × 2 (Carlos: deja sobrantes y la guía estorba). Razón: el cable se rutea más fácil.
+- **D-65 — Ranura del desarmador recta, sin chaflán:** se decide después de imprimir. Alternativas: chaflán de ~1.5 en la boca de arriba (recomendada); chaflán en el fondo (con 1.0 el apoyo de cada franja baja de 1.67 a 0.67).
+- **D-66 — Cara de atrás de la cápsula:**
+  - Bolsillo OpenLOCK nominal de 4.2 a 1.6 del piso (z 3.6–7.8), con el perfil del cupón.
+  - Ranura de los machos de 11.0 × 3.4 centrada a 11.2, de lado a lado del bloque de 14.
+  - **Tope de los machos en la cavidad:** placa de 1.5 contra la pared de atrás, del piso a 14.4, con paso de cables de 9 × 2.
+  - Alternativa: bloque de 15.5 con el tope adentro. Razón: la cápsula no crece; Carlos lo aprobó.
+- **D-67 — Pin en gota y hueco con avellanado (sustituye la forma de D-55):**
+  - Pin Ø3 × 7 con punta a 45° hacia abajo, base r0.8 y chaflán de 0.5 en la punta.
+  - Hueco Ø3.2 × 9 con gota arriba y abajo y **avellanado de 45° de 1.7**.
+  - Pin a −X y hueco a +X, a 9.5 del centro, cruzados en la pieza del cable.
+  - Alternativa: pin metálico (plan B de D-55). Razón: un pin horizontal redondo no se imprime sin soporte; con el avellanado, la base r0.8 del pin no choca con la boca del hueco.
+- **D-68 — Conector de 31 × 46 × 21.6 (sustituye las medidas de D-56):**
+  - Mismo alto, pared, tapa, labio y orillas en gota que la cápsula.
+  - Esquinas R4 en la cara de unión y R6 atrás.
+  - Bolsillo de 3.8 centrado con el de la cápsula; ranura de hembras de 11.9 de fondo, con tope de 1.5 y paso de 9 × 2.
+  - Alternativas: 29 × 36 con R6 (el pin y el hueco quedaban sobre la curva de la esquina); 36 de largo (Carlos: cavidad justa).
+  - Razón: cara plana hasta ±11.5. La cavidad entre el tope de las hembras y la prensa pasa de 9.6 a **21.6**: las hembras entran por el frente con los cables sueltos hacia atrás, se acerca el CAT6 y se suelda cada hilo.
+- **D-69 — Prensa del CAT6 recorrida 2 mm hacia atrás y con las esquinas del frente cortadas a 45°:**
+  - Sección de 11 (antes 13).
+  - Costillas del cuerpo a CON_D − 9 y CON_D − 3 (la de atrás, pegada a la pared); la de la tapa a CON_D − 6.
+  - Canal de 5.0; esquinas del frente de la prensa cortadas a 45° (2.5) en la vista superior.
+  - Razón: Carlos; más cavidad.
+- **D-70 — Postes M3 del conector unidos a las paredes:**
+  - El de la izquierda va en el bloque del frente, con el inserto a 0.8 del fondo del hueco del pin; sale 1.9 a la cavidad, antes 7.4.
+  - Los 2 llevan relleno hasta sus paredes, sin medias lunas, recortado a 0.5 dentro de ellas. El de atrás también se une a la pared del canal.
+  - Alternativa: recorrer el de atrás hacia la esquina (su centro ya está a 5.7 de la orilla, menos que los 6.5 de la cápsula; el avellanado se comería la gota).
+  - Razón: queda todo de una pieza (Carlos).
+- **D-71 — Firmware v3 (implementa D-43):**
+  - INA219 a 0x40, 0.1 Ω, `max_current: 3.2A`, `max_voltage: 16V`.
+  - INA y LCD se refrescan cada 5 s (cada 1 s en modo banco) con un `interval`.
+  - Modo banco guardado en la flash (`restore_from_flash`); la energía no se guarda.
+  - 2a fila: INA → filamentos → fecha y hora.
+  - El nombre del dispositivo y el del botón no cambian.
+  - En modo banco solo cambia la fila de abajo (Carlos).
+
+**Superadas:** de D-56, 29 × 36 × 19.7, la costilla a CON_D − 5 / − 11 y la tapa a − 8 (ahora 31 × 46 × 21.6 y D-69). De D-55, el pin redondo (ahora en gota, D-67).
+
+**Problemas y solución:**
+- El relleno del poste de atrás se salía de la orilla en gota de la base (z 1.5–2.3, en la esquina R6; Carlos lo vio en Onshape). Se recortó con la cavidad agrandada 0.5 y se agregó un test de que nada sale de la caja exterior.
+- La base r0.8 de cada pin chocaba con la boca del hueco de la otra pieza (1.7 mm³). Con un avellanado de 1.2 quedaba 0.006 y con 1.5, 0.00006; con 1.7 queda en 0.
+- El poste de la izquierda tapaba el hueco del pin y parte del bolsillo: los cortes de la cara se pasaron después de los postes.
+- La salida del CAT6 se comía la costilla de atrás: la salida empieza en la cara interior de la pared.
+
+**Parámetros definidos:** `CAP_G_COLLAR_T = 3.0`, `CAP_G_COLLAR_CL = 0.2`, `CAP_G_COLLAR_H = 2.5`, `CAP_G_PRESS_CL = 0.1`; `CAP_POCK_Z0 = 3.6`, `CAP_POCK_H = 4.2`, `CAP_ROW_W = 11.0`, `CAP_ROW_H = 3.4`, `CAP_ROW_GAP = 1.7`, `CAP_ROW_ZC = 11.2`, `CAP_ROW_STOP_T = 1.5`, `CAP_ROW_STOP_W = 14.0`, `CAP_ROW_WIRE_W = 9.0`, `CAP_ROW_WIRE_H = 2.0`, `CAP_PIN_DX = 9.5`, `CAP_PIN_D = 3.0`, `CAP_PIN_L = 7.0`, `CAP_PIN_ROOT_R = 0.8`, `CAP_PIN_TIP_C = 0.5`, `CAP_HOLE_D = 3.2`, `CAP_HOLE_DEPTH = 9.0`, `CAP_HOLE_CSK = 1.7`; `CON_W = 31.0`, `CON_D = 46.0`, `CON_R_FACE = 4.0`, `CON_R_BACK = 6.0`, `CON_FRONT = 13.4`, `CON_POCK_H = 3.8`, `CON_CH_W = 5.0`, `CON_SAD_L = 11.0`, `CON_SAD_CH = 2.5`, `CON_SAD_WALL = 2.5`, `CON_RIB_T = 1.2`, `CON_RIB_H = 0.5`, `CON_RIBS_BODY = (CON_D − 9, CON_D − 3)`, `CON_RIB_LID = CON_D − 6`, `CON_BOSS_D = 7.4`, `CON_SCREW_WALL = 0.8`, `CON_SCREWS`.
+
+**Archivos:** `cad/conector.py`, `cad/test_conector.py`, `esphome/bmetesting_3.yaml` (nuevos); `cad/capsula.py`, `cad/test_capsula.py`, `cad/parameters.py`, `CLAUDE.md`. En `output/` (fuera de git): `capsula_cuerpo/tapa/ensamble_3` a `_7` (`_1` a `_5` pasaron a `historico/`) y `conector_cuerpo/tapa/ensamble_1` a `_4` (`_1` y `_2` pasaron a `historico/`). Las láminas `boceto_capsula_15` y `boceto_conector_4` quedaron atrás del 3D (no se regeneraron).
+
+**Pendientes (Carlos):**
+1. Probar la cápsula impresa: pin en gota, techo del bolsillo, machos contra el tope, bornera GND en la U con el bloque de la tapa.
+2. Confirmar el calibre del cable GND.
+3. Imprimir el conector (`conector_*_4`) y ajustarlo según la cápsula; revisar el largo de la cavidad con las piezas reales.
+4. Firmware v3: prueba del botón (1 clic, 2 clics, clic largo) y, con la cápsula, V y A contra el multímetro con una carga conocida.
+5. Revisar en ESPHome que `presencetest1wemos.yaml` sea el archivo con el contenido de `bmetesting_3.yaml`.
+
 ---
 
 ## 4. Lecciones aprendidas

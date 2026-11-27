@@ -394,8 +394,13 @@ INA_SUP_W = 1.6                  # apoyo bajo el lado del header
 INA_SUP_Y = 5.0                  # orilla de atras -> centro del apoyo
 CAP_GAP = 1.0                    # modulo -> bornera GND
 CAP_WIRE_GAP = 5.0               # detras del modulo: el cable GND va por la pared derecha
-CAP_CUNA_WALL = 1.0              # cuna de la bornera GND (pines cortados a 2)
+CAP_CUNA_WALL = 1.0              # cuna de la bornera GND (pines cortados a 2), hueca hasta el piso
 CAP_G_PIN_CUT = 2.0
+                                 # la cuna es una U: sin pared derecha (entra el cable GND)
+CAP_G_COLLAR_T = 3.0             # bloque de la tapa sobre la bornera GND: pared izq. y de atras
+CAP_G_COLLAR_CL = 0.2            #   (a la derecha llega hasta el labio)
+CAP_G_COLLAR_H = 2.5             # cuanto baja el bloque por los lados de la bornera
+CAP_G_PRESS_CL = 0.1             # tapa -> cara de arriba de la bornera GND (la sujeta hacia abajo)
 CAP_WIN_W = 9.5                  # ventanas del frente (simetricas, D-52)
 CAP_WIN_H = 6.5
 CAP_WIN_R = 1.0
@@ -440,3 +445,48 @@ DUP_M_L = 14.0                   # carcasa del macho (capsula)
 DUP_M_PIN = 5.7                  # pin metalico del macho, fuera de la carcasa
 DUP_F_L = 12.0                   # carcasa de la hembra (pieza del cable)
 DUP_F_SLOT_DEPTH = DUP_F_L - 0.1  # fondo de la ranura de las hembras (D-49)
+
+# Cara del conector de la capsula (checkpoint 2; cara de atras, Y = CAP_D).
+# Mismas cotas en la pieza del cable, en espejo.
+CAP_POCK_Z0 = CAP_FLOOR + 1.6    # bolsillo OpenLOCK nominal (4.2), abajo de los pines
+CAP_POCK_H = OL2_BLIND_THICK
+CAP_ROW_W = 11.0                 # ranura de los 4 machos (4 x 2.54 + holgura de la cinta)
+CAP_ROW_H = 3.4
+CAP_ROW_GAP = 1.7                # techo del bolsillo -> ranura
+CAP_ROW_ZC = CAP_POCK_Z0 + CAP_POCK_H + CAP_ROW_GAP + CAP_ROW_H / 2   # 11.2: tambien pin y hueco
+CAP_ROW_STOP_T = 1.5             # tope de los machos dentro de la cavidad (el bloque = DUP_M_L)
+CAP_ROW_STOP_W = CAP_ROW_W + 2 * 1.5
+CAP_ROW_WIRE_W = 9.0             # paso de los cables en el tope (no pasan las carcasas)
+CAP_ROW_WIRE_H = 2.0
+CAP_PIN_DX = 9.5                 # pin a -X y hueco a +X (cruzados con la pieza del cable)
+CAP_PIN_D = 3.0                  # pin en gota (punta a 45 grados abajo: se imprime sin soporte)
+CAP_PIN_L = 7.0
+CAP_PIN_ROOT_R = 0.8
+CAP_PIN_TIP_C = 0.5
+CAP_HOLE_D = 3.2                 # hueco del pin de la pieza del cable (gota arriba y abajo)
+CAP_HOLE_DEPTH = 9.0
+CAP_HOLE_CSK = 1.7                # avellanado de 45 grados en la boca: ahi entra la base r0.8 del pin
+
+# ----------------------------------------------------------------------
+# CONECTOR DEL CAT6 (pieza del cable, D-46 a D-56). Coordenadas de la capsula:
+# la cara de union esta en Y = CAP_D y la pieza crece hacia +Y. Mismo alto,
+# pared, tapa, labio y orillas en gota que la capsula.
+# ----------------------------------------------------------------------
+CON_W = 31.0                     # 29 de la lamina + 2: el pin y el hueco (a 9.5) quedan en la cara plana
+CON_D = 46.0                     # 36 + 10: cavidad para soldar el CAT6 a las hembras (Carlos)
+CON_R_FACE = 4.0                 # esquinas de la cara de union (plana hasta +-11.5)
+CON_R_BACK = 6.0
+CON_FRONT = DUP_F_SLOT_DEPTH + CAP_ROW_STOP_T   # 13.4: bloque del frente (hembras + tope)
+CON_POCK_H = OL_CABLE_POCK_H     # 3.8, centrado con el de la capsula
+CON_CH_W = 5.0                   # canal del CAT6, mas angosto que la funda (5.5)
+CON_SAD_L = 11.0                 # silla del CAT6 (prensa), hasta la pared de atras
+CON_SAD_CH = 2.5                 # esquinas del frente de la prensa cortadas a 45 grados (vista superior)
+CON_SAD_WALL = 2.5               # paredes del canal
+CON_RIB_T = 1.2                  # costillas que muerden la funda
+CON_RIB_H = 0.5
+CON_RIBS_BODY = (CON_D - 9.0, CON_D - 3.0)   # la de atras, pegada a la pared
+CON_RIB_LID = CON_D - 6.0
+CON_BOSS_D = 7.4                 # postes de los M3 en diagonal, pegados a las paredes
+CON_SCREW_WALL = 0.8             # fondo del hueco del pin -> barreno del inserto de la izq.
+CON_SCREWS = ((-(CON_W / 2 - CAP_WALL - CON_BOSS_D / 2 + 0.3), CAP_HOLE_DEPTH + CON_SCREW_WALL + INS_M3_HOLE_D / 2),
+              (CON_W / 2 - CAP_WALL - CON_BOSS_D / 2 + 0.3, CON_D - CAP_WALL - CON_BOSS_D / 2 + 0.3))

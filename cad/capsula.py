@@ -4,11 +4,13 @@ Cuerpo: caja de esquinas R8 por fuera y R2 por dentro, orilla de la base en
 gota r3.5, 2 ventanas simetricas al frente, bloque macizo atras (ahi iran el
 bolsillo OpenLOCK, la fila Dupont y el pin en el checkpoint 2), postes del
 modulo con inserto M2.5, costilla bajo su bornera, apoyo bajo el lado del
-header, cuna de la bornera GND e insertos M3 de la tapa.
+header, cuna hueca de la bornera GND con la entrada del cable a la derecha,
+canal del cable GND junto a la pared derecha e insertos M3 de la tapa.
 
 Tapa: placa con la orilla de arriba en gota r3.5, labio con entrada a 45
-grados (sin tramo al frente), 2 lenguetas al frente, 2 M3 avellanados atras y
-2 ranuras ovaladas sobre los tornillos de las borneras.
+grados (sin tramo al frente), 2 lenguetas al frente, collar que fija la
+bornera GND, 2 M3 avellanados atras y 2 ranuras ovaladas sobre los tornillos
+de las borneras.
 
 Coordenadas: ver parameters.py (seccion CAPSULA). El cuerpo se imprime sobre
 su base; la tapa, boca abajo (build_lid_print).
@@ -69,6 +71,64 @@ def tb_screws():
     return (P.INA_XC, ym), (P.GND_XC, yg)
 
 
+# ---------------------------------------------------------------- cara del conector
+def drop_xz(x, z, r, up=False, down=False):
+    """Perfil en el plano XZ: circulo r con punta a 45 grados arriba y/o abajo."""
+    s = cq.Sketch().push([(x, z)]).circle(r)
+    for flag, sz in ((up, 1), (down, -1)):
+        if flag:
+            s = s.push([(x, z + sz * r / 2 ** 0.5)]).rect(r, r, angle=45, mode="a")
+    return s.clean()
+
+
+def prism_y(sketch, y0, length):
+    """Extruye un perfil del plano XZ de y0 hacia +Y."""
+    return cq.Workplane("XZ", origin=(0, y0, 0)).placeSketch(sketch).extrude(-length)
+
+
+def hole_csk(x, z, y_face, sign):
+    """Avellanado de 45 grados en la boca del hueco del pin (sign: hacia donde entra)."""
+    r0 = P.CAP_HOLE_D / 2 + P.CAP_HOLE_CSK
+    c = P.CAP_HOLE_CSK
+    return cq.Workplane(obj=cq.Solid.makeCone(
+        r0 + 0.5, P.CAP_HOLE_D / 2, c + 0.5, cq.Vector(x, y_face - sign * 0.5, z), cq.Vector(0, sign, 0)))
+
+
+def openlock_pocket(y_face, z0, h):
+    """Bolsillo OpenLOCK con la boca en y_face, hacia -Y (perfil del cupon)."""
+    from cupon_openlock import openlock_pts
+    pts = [(x, y_face - (y if y > 0 else -0.5)) for x, y in openlock_pts()]
+    return cq.Workplane("XY", origin=(0, 0, z0)).polyline(pts).close().extrude(h)
+
+
+def connector_face(b):
+    """Cara de atras: bolsillo OpenLOCK de 4.2, ranura de los 4 machos al ras con
+    su tope en la cavidad, pin en gota a -X y hueco a +X."""
+    yf, zr = P.CAP_D, P.CAP_ROW_ZC
+    b = b.cut(openlock_pocket(yf, P.CAP_POCK_Z0, P.CAP_POCK_H))
+    # tope de los machos: placa contra la pared de atras de la cavidad, del piso
+    # hasta arriba de la ranura, con el paso de los cables
+    y1 = P.CAP_CAV_Y1
+    zt = zr + P.CAP_ROW_H / 2 + P.CAP_ROW_STOP_T
+    stop = box_between((-P.CAP_ROW_STOP_W / 2, y1 - P.CAP_ROW_STOP_T, P.CAP_FLOOR - 0.5),
+                       (P.CAP_ROW_STOP_W / 2, y1 + 0.5, zt))
+    b = b.union(stop)
+    b = b.cut(box_between((-P.CAP_ROW_WIRE_W / 2, y1 - P.CAP_ROW_STOP_T - 1, zr - P.CAP_ROW_WIRE_H / 2),
+                          (P.CAP_ROW_WIRE_W / 2, y1 + 1, zr + P.CAP_ROW_WIRE_H / 2)))
+    b = b.cut(box_between((-P.CAP_ROW_W / 2, y1, zr - P.CAP_ROW_H / 2),
+                          (P.CAP_ROW_W / 2, yf + 1, zr + P.CAP_ROW_H / 2)))
+    # hueco del pin de la pieza del cable (+X)
+    b = b.cut(prism_y(drop_xz(P.CAP_PIN_DX, zr, P.CAP_HOLE_D / 2, up=True, down=True),
+                      yf - P.CAP_HOLE_DEPTH, P.CAP_HOLE_DEPTH + 1))
+    b = b.cut(hole_csk(P.CAP_PIN_DX, zr, yf, -1))
+    # pin (-X): gota con la punta abajo, punta con chaflan, base con redondeo
+    pin = prism_y(drop_xz(-P.CAP_PIN_DX, zr, P.CAP_PIN_D / 2, down=True), yf - 0.5, P.CAP_PIN_L + 0.5)
+    pin = pin.faces(">Y").edges().chamfer(P.CAP_PIN_TIP_C)
+    b = b.union(pin)
+    sel = cq.selectors.BoxSelector((-P.CAP_PIN_DX - 3, yf - 0.01, zr - 3), (-P.CAP_PIN_DX + 3, yf + 0.01, zr + 3))
+    return b.edges(sel).fillet(P.CAP_PIN_ROOT_R)
+
+
 # ---------------------------------------------------------------- cuerpo
 def build_body():
     h = P.CAP_BODY_H
@@ -96,14 +156,16 @@ def build_body():
     ys = P.INA_Y0 + P.INA_MW - P.INA_SUP_Y
     b = b.union(box_between((P.INA_X0 + 3.0, ys - P.INA_SUP_W / 2, P.CAP_FLOOR - 0.5),
                             (P.INA_X0 + P.INA_ML - 3.0, ys + P.INA_SUP_W / 2, z_top)))
-    # cuna de la bornera GND (hueca para los pines cortados)
+    # cuna de la bornera GND: U hueca hasta el piso (pines cortados, soldadura
+    # del cable y puente), abierta a la derecha para que entre el cable GND
     gx0, gx1 = P.GND_XC - P.BORNE2_L / 2 - 0.5, P.GND_XC + P.BORNE2_L / 2 + 0.5
     gy1 = P.GND_Y0 + P.BORNE2_D
     cuna = box_between((gx0, P.GND_Y0, P.CAP_FLOOR - 0.5), (gx1, gy1, P.GND_Z0))
     w = P.CAP_CUNA_WALL
-    cuna = cuna.cut(box_between((gx0 + w, P.GND_Y0 + w, P.GND_Z0 - P.CAP_G_PIN_CUT - 0.5),
-                                (gx1 - w, gy1 - w, P.GND_Z0 + 1)))
+    cuna = cuna.cut(box_between((gx0 + w, P.GND_Y0 + w, P.CAP_FLOOR),
+                                (gx1 + 1, gy1 - w, P.GND_Z0 + 1)))
     b = b.union(cuna)
+    b = connector_face(b)
     # barrenos de los insertos (despues de las uniones)
     for x, y in ina_holes():
         b = b.cut(cyl_z(x, y, P.INS_M25_HOLE_D, z_top - P.INA_INS_DEPTH, z_top + 1))
@@ -114,6 +176,22 @@ def build_body():
 
 
 # ---------------------------------------------------------------- tapa
+def gnd_collar():
+    """Bloque casi solido de la tapa que fija la bornera GND: la rodea a la
+    izq., atras y der. (a la derecha llega hasta el labio; al frente la detiene
+    la pared de las ventanas) y la toca arriba a CAP_G_PRESS_CL. Solo le queda
+    la ranura del desarmador. La cuna la sostiene por abajo."""
+    z0 = P.CAP_BODY_H
+    ztop = P.GND_Z0 + P.BORNE2_H
+    cl, t = P.CAP_G_COLLAR_CL, P.CAP_G_COLLAR_T
+    x0, x1 = P.GND_XC - P.BORNE2_L / 2 - cl, P.GND_XC + P.BORNE2_L / 2 + cl
+    y0, y1 = P.CAP_WALL + P.CAP_LIP_CL, P.GND_Y0 + P.BORNE2_D + cl
+    xr = P.CAP_W / 2 - P.CAP_WALL - P.CAP_LIP_CL
+    c = box_between((x0 - t, y0, ztop - P.CAP_G_COLLAR_H), (xr, y1 + t, z0))
+    c = c.intersect(_cavity(ztop - P.CAP_G_COLLAR_H - 1, z0, P.CAP_LIP_CL))
+    return c.cut(box_between((x0, y0 - 1, ztop - P.CAP_G_COLLAR_H - 1), (x1, y1, ztop + P.CAP_G_PRESS_CL)))
+
+
 def build_lid():
     z0, z1 = P.CAP_BODY_H, P.CAP_H
     lid = rrect_prism(-P.CAP_W / 2, 0, P.CAP_W / 2, P.CAP_D, z0, z1, P.CAP_R)
@@ -134,6 +212,7 @@ def build_lid():
         tab = box_between((sx * xt - P.CAP_TAB_W / 2, y0, z0 - P.CAP_TAB_H),
                           (sx * xt + P.CAP_TAB_W / 2, y0 + P.CAP_TAB_T, z0))
         lid = lid.union(tab.intersect(keep))
+    lid = lid.union(gnd_collar())
     # ranuras ovaladas sobre los tornillos de las borneras
     for x, y in tb_screws():
         lid = lid.cut(cq.Workplane("XY").workplane(offset=z0 - 1).center(x, y)
@@ -169,6 +248,15 @@ def gnd_envelope():
                        (P.GND_XC + P.BORNE2_L / 2, P.GND_Y0 + P.BORNE2_D, P.GND_Z0 + P.BORNE2_H))
 
 
+def dupont_envelope():
+    """Los 4 machos: carcasas al ras de la cara y pines metalicos afuera."""
+    w = 4 * 2.54 / 2
+    zr, h = P.CAP_ROW_ZC, P.DUP_W / 2
+    housing = box_between((-w, P.CAP_D - P.DUP_M_L, zr - h), (w, P.CAP_D, zr + h))
+    pins = box_between((-w + 0.8, P.CAP_D, zr - 0.32), (w - 0.8, P.CAP_D + P.DUP_M_PIN, zr + 0.32))
+    return housing, pins
+
+
 def build_assembly():
     grey, orange = cq.Color(0.75, 0.75, 0.75), cq.Color(1.0, 0.55, 0.1)
     a = cq.Assembly(name="capsula")
@@ -178,6 +266,9 @@ def build_assembly():
     a.add(pcb, name="gy219_placa", color=orange)
     a.add(tb, name="gy219_bornera", color=orange)
     a.add(gnd_envelope(), name="bornera_gnd", color=orange)
+    housing, pins = dupont_envelope()
+    a.add(housing, name="dupont_machos", color=orange)
+    a.add(pins, name="dupont_pines", color=orange)
     return a
 
 
