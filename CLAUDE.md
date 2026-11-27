@@ -153,7 +153,7 @@ Fuente única de verdad: `cad/parameters.py`. Valores vigentes:
 - `cad/cq_utils.py` (export versionado STL+STEP y de ensambles; el numeral también cuenta `output/historico/`), `cad/stl_ref.py` (lector de STL con numpy)
 - `cad/test_*.py` — 92 tests (2 se saltan si falta el STL del conector, que no se publica); correr con `cd cad && python3 -m pytest -q`
 - `output/` — exportaciones versionadas (`_1`, `_2`...); **solo la versión actual y la anterior**, lo viejo en `output/historico/`. Vigentes: `caja_delantera_6`, `caja_trasera_4`, `tapa_trasera_3`, `ensamble_16` (este sí va en git), `prueba_boton_4`, `cupon_openlock_N_1` / `_T_1`, `capsula_cuerpo_7`, `capsula_tapa_7`, `capsula_ensamble_7`, `conector_cuerpo_4`, `conector_tapa_4`, `conector_ensamble_4`, `boceto_capsula_15.png`, `boceto_conector_4.png`, `medidas_gy219_1.png`, `medidas_pines_bornera_ina_1.png`, `caja_frontal_2.png`, `medidas_bornera_2p_4.png`, `perfil_orilla_1.png`, `ina219_estimado_1.png`, `frente_hexagonos_3.png`, `insertos_caja_*_1.png`.
-- `esphome/bmetesting_3.yaml` — firmware ESPHome vigente y cargado (versión 3, D-71); `bmetesting_1.yaml` y `_2`, históricos. En el ESPHome de Carlos el archivo se llama `presencetest1wemos.yaml` (por confirmar)
+- `esphome/bmetesting_3.yaml` — firmware ESPHome vigente y cargado (versión 3, D-71); `bmetesting_1.yaml` y `_2`, históricos. En el ESPHome de Carlos se pega en `presencetest1wemos.yaml` (por el editor, no con el archivo)
 - `LICENSE` — MIT, con excepción para el conector HSW
 - `README.md` — presentación del repo: estado, carcasa, electrónica, BOM, resumen y lecciones
 - `docs/bitacora.md` — **registro histórico del proyecto**

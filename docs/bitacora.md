@@ -527,7 +527,7 @@ Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
 - Checkpoint 2: cara de atrás de la cápsula (`capsula_*_6`); luego, avellanado en el hueco del pin (`capsula_*_7`).
 - Conector del CAT6 modelado en `cad/conector.py` (`conector_*_1` a `_4`), en coordenadas de la cápsula y probado acoplado contra ella sin interferencias.
 - Firmware `esphome/bmetesting_3.yaml`: Carlos lo validó en HA y lo cargó por OTA. El log salió como se esperaba: 0x76 y 0x27 responden; 0x77 y el INA219 quedan FAILED porque no hay nada en el puerto.
-- Carlos mandó a imprimir la cápsula [dato faltante: versión impresa; se le avisó que la vigente es `capsula_cuerpo_7` / `capsula_tapa_7`].
+- Carlos mandó a imprimir la cápsula: `capsula_cuerpo_7` / `capsula_tapa_7`.
 - Inventario: −19 g del FIL-0014 (PETG+ negro verde; 17 g laminados + 10 %), proyecto temp-th; quedan 105 g (commit `b78aa06` en el repo del inventario).
 - 92 tests (antes 74): 13 de la cápsula y 13 del conector.
 
@@ -586,7 +586,7 @@ Después: modelo CadQuery de la cápsula y del conector, y `bmetesting_3.yaml`.
 2. Confirmar el calibre del cable GND.
 3. Imprimir el conector (`conector_*_4`) y ajustarlo según la cápsula; revisar el largo de la cavidad con las piezas reales.
 4. Firmware v3: prueba del botón (1 clic, 2 clics, clic largo) y, con la cápsula, V y A contra el multímetro con una carga conocida.
-5. Revisar en ESPHome que `presencetest1wemos.yaml` sea el archivo con el contenido de `bmetesting_3.yaml`.
+5. ~~Revisar en ESPHome que `presencetest1wemos.yaml` sea el archivo con el contenido de `bmetesting_3.yaml`~~ → sí (Carlos, 2026-11-27): lo sube por el editor de ESPHome, no con el archivo.
 
 ---
 
